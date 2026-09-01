@@ -1,0 +1,40 @@
+.intro {
+  padding: 130px 6vw 100px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 0.75fr 1.25fr;
+  gap: 8vw;
+  align-items: start;
+}
+.grid h2 {
+  font-size: clamp(2.1rem, 3.6vw, 3rem);
+  line-height: 1.06;
+}
+.copy {
+  font-size: 1.14rem;
+  color: var(--color-ink-soft);
+  max-width: 52ch;
+}
+.stats {
+  display: flex;
+  gap: 44px;
+  margin-top: 44px;
+  flex-wrap: wrap;
+}
+.stat b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--color-primary);
+}
+.stat span {
+  font-size: 0.86rem;
+  color: var(--color-ink-soft);
+}
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}

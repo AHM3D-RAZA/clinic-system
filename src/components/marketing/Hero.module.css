@@ -1,0 +1,165 @@
+.hero {
+  position: relative;
+  padding: 150px 6vw 90px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2vw;
+  align-items: center;
+}
+
+.copy {
+  position: relative;
+  z-index: 5;
+}
+
+.copy h1 {
+  font-size: clamp(3rem, 7vw, 5.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.015em;
+}
+.copy h1 em {
+  font-style: italic;
+  color: var(--color-primary);
+}
+.headlineLine {
+  display: inline;
+}
+
+.lede {
+  margin-top: 26px;
+  max-width: 30ch;
+  font-size: 1.14rem;
+  color: var(--color-ink-soft);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 38px;
+  flex-wrap: wrap;
+}
+
+.diorama {
+  position: relative;
+  height: 520px;
+  perspective: 1200px;
+}
+
+.card {
+  position: absolute;
+  width: 230px;
+  height: 290px;
+  border-radius: 20px;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 90%;
+  box-shadow: 0 24px 44px -14px rgba(42, 33, 24, 0.35);
+  border: 6px solid var(--color-paper);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.swatchLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  font-family: var(--font-mark);
+  font-size: 1.3rem;
+  color: var(--color-paper);
+}
+.swatchLabel span {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.badge {
+  position: absolute;
+  z-index: 10;
+  left: 50%;
+  top: 8%;
+  transform: translateX(-50%) rotate(-6deg);
+  background: var(--color-accent);
+  color: var(--color-ink);
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-align: center;
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--color-accent) 40%, transparent);
+  animation: spinSlow 22s linear infinite;
+}
+@keyframes spinSlow {
+  to {
+    transform: translateX(-50%) rotate(354deg);
+  }
+}
+
+.scrollCue {
+  position: absolute;
+  bottom: 30px;
+  left: 6vw;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+.scrollLine {
+  width: 38px;
+  height: 1px;
+  background: var(--color-ink-soft);
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+.scrollLine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  animation: cue 1.8s ease-in-out infinite;
+}
+@keyframes cue {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 980px) {
+  .inner {
+    grid-template-columns: 1fr;
+  }
+  .diorama {
+    height: 400px;
+    margin-top: 20px;
+    order: -1;
+  }
+  .card {
+    width: 170px;
+    height: 220px;
+  }
+}

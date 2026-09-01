@@ -1,0 +1,30 @@
+.band {
+  padding: 120px 6vw;
+  text-align: center;
+  position: relative;
+}
+.quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.7rem, 4vw, 3rem);
+  line-height: 1.25;
+  max-width: 22ch;
+  margin: 0 auto;
+}
+.attribution {
+  display: block;
+  margin-top: 26px;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--color-primary-deep);
+}
+.mark {
+  font-family: var(--font-display);
+  font-size: 6rem;
+  color: var(--color-accent);
+  line-height: 0;
+  position: relative;
+  top: 30px;
+  display: inline-block;
+}

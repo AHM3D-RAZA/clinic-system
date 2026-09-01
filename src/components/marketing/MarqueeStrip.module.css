@@ -1,0 +1,32 @@
+.marquee {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 16px 0;
+  transform: rotate(-1deg) scale(1.02);
+  margin: -18px 0 10px;
+}
+.track {
+  display: inline-flex;
+  animation: scrollLeft 32s linear infinite;
+}
+.track span {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.4rem;
+  padding: 0 2em;
+  opacity: 0.9;
+}
+.dot {
+  color: var(--color-accent);
+  font-style: normal;
+}
+@keyframes scrollLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
