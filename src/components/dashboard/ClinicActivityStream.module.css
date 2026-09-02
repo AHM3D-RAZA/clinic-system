@@ -1,0 +1,40 @@
+.stream {
+  max-width: 640px;
+  position: relative;
+}
+
+.stream::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 40px;
+  bottom: 22px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-primary),
+    var(--color-secondary) 45%,
+    var(--color-ink-soft) 85%
+  );
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.quiet {
+  max-width: 46ch;
+  padding: 8px 0 0 28px;
+  border-left: 2px dashed var(--color-line);
+}
+
+.quietTitle {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+
+.quietBody {
+  font-size: 0.92rem;
+  color: var(--color-ink-soft);
+}

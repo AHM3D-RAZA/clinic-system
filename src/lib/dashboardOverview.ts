@@ -1,5 +1,5 @@
 import type { BookingRequest } from "@/types/booking";
-import type { ServiceOffering } from "@/types/content";
+import type { Doctor, ServiceOffering } from "@/types/content";
 import type { DashboardOverviewSummary } from "@/types/dashboard";
 
 const RECENT_LIMIT = 6;
@@ -60,4 +60,13 @@ export function greetingLabel(period: GreetingPeriod): string {
  */
 export function buildServiceNameLookup(services: ServiceOffering[]): Record<string, string> {
   return Object.fromEntries(services.map((service) => [service.id, service.name]));
+}
+
+/**
+ * Same idea as `buildServiceNameLookup`, for `BookingRequest.assignedDoctorId`.
+ * Lets the overview say "with Dr. Farooqi" instead of just a raw id — one of
+ * the small threads that ties a booking to the person handling it.
+ */
+export function buildDoctorNameLookup(doctors: Doctor[]): Record<string, string> {
+  return Object.fromEntries(doctors.map((doctor) => [doctor.id, doctor.name]));
 }

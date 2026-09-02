@@ -16,9 +16,9 @@ test.describe("smoke: dashboard", () => {
     await page.goto("/dashboard");
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/Good (morning|afternoon|evening)/);
-    await expect(page.getByRole("heading", { name: "Needs attention" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Waiting on you" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Today" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Recent activity" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Recently in" })).toBeVisible();
 
     // At least one real booking request renders — proving this reads
     // persisted data through the service layer, not a stub or an
@@ -31,7 +31,7 @@ test.describe("smoke: dashboard", () => {
     expect(consoleErrors, `Unexpected console errors: ${consoleErrors.join(", ")}`).toHaveLength(0);
   });
 
-  test("a freshly submitted booking request shows up in the dashboard's attention panel", async ({ page }) => {
+  test("a freshly submitted booking request shows up in the dashboard's 'waiting on you' chapter", async ({ page }) => {
     // Unique per run: the mock store persists across repeated local/CI
     // runs (same as a real database would), so a fixed name would
     // eventually collide with a booking an earlier run left behind.
@@ -53,8 +53,12 @@ test.describe("smoke: dashboard", () => {
     await expect(page.getByRole("status")).toContainText("You're on our list");
 
     await page.goto("/dashboard");
-    const attentionPanel = page.locator("section", { has: page.getByRole("heading", { name: "Needs attention" }) });
-    await expect(attentionPanel.getByText(patientName)).toBeVisible();
+    // The stream is one continuous list, so scope to everything between
+    // the "Waiting on you" heading and the next chapter heading ("Today").
+    const waitingHeading = page.getByRole("heading", { name: "Waiting on you" });
+    await expect(waitingHeading).toBeVisible();
+    const stream = page.locator("main ul").first();
+    await expect(stream.getByText(patientName)).toBeVisible();
   });
 
   test("desktop nav rail lists Overview as active and the unimplemented items as honest placeholders", async ({

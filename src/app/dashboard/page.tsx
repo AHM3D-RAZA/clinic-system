@@ -10,6 +10,7 @@ import { DEFAULT_CLINIC_ID } from "@/config/clinics";
  */
 export const dynamic = "force-dynamic";
 import {
+  buildDoctorNameLookup,
   buildOverviewSummary,
   buildServiceNameLookup,
   greetingPeriod,
@@ -26,22 +27,26 @@ import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
  * service.
  */
 export default async function DashboardOverviewPage() {
-  const [{ clinic, services }, bookings] = await Promise.all([
+  const [{ clinic, services, doctors }, bookings] = await Promise.all([
     clinicService.getClinicContent(DEFAULT_CLINIC_ID),
     bookingService.listByClinic(DEFAULT_CLINIC_ID),
   ]);
 
   const now = new Date();
-  const summary = buildOverviewSummary(bookings, todayIsoDate(now));
+  const todayIso = todayIsoDate(now);
+  const summary = buildOverviewSummary(bookings, todayIso);
   const serviceNameById = buildServiceNameLookup(services);
+  const doctorNameById = buildDoctorNameLookup(doctors);
 
   return (
     <DashboardOverview
       clinicShortName={clinic.shortName}
       period={greetingPeriod(now)}
-      dateLabel={formatDateForDisplay(todayIsoDate(now))}
+      dateLabel={formatDateForDisplay(todayIso)}
+      todayIso={todayIso}
       summary={summary}
       serviceNameById={serviceNameById}
+      doctorNameById={doctorNameById}
     />
   );
 }

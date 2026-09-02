@@ -1,0 +1,22 @@
+.item {
+  padding-left: 28px;
+  margin-top: 34px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.item:first-child {
+  margin-top: 0;
+}
+
+.label {
+  font-size: 1.25rem;
+}
+
+.note {
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  text-transform: lowercase;
+}

@@ -1,0 +1,116 @@
+.entry {
+  display: flex;
+  gap: 16px;
+  animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px var(--color-paper);
+}
+
+.dotPending {
+  background: var(--color-primary);
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+.dotContacted {
+  background: var(--color-accent);
+}
+
+.dotConfirmed {
+  background: var(--color-secondary);
+}
+
+.dotCompleted {
+  background: var(--color-ink-soft);
+  opacity: 0.55;
+}
+
+.dotCancelled {
+  background: var(--color-ink-soft);
+  opacity: 0.3;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px var(--color-paper), 0 0 0 3px var(--color-paper);
+  }
+  50% {
+    box-shadow: 0 0 0 3px var(--color-paper), 0 0 0 7px color-mix(in srgb, var(--color-primary) 25%, transparent);
+  }
+}
+
+.railLine {
+  flex: 1;
+  width: 2px;
+  min-height: 24px;
+  background: var(--color-line);
+  margin-top: 4px;
+}
+
+.entry:last-of-type .railLine {
+  display: none;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 22px;
+}
+
+.who {
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.service {
+  color: var(--color-ink-soft);
+}
+
+.when {
+  margin-top: 3px;
+  font-size: 0.86rem;
+  color: var(--color-ink-soft);
+}
+
+.todayTag {
+  font-weight: 700;
+  color: var(--color-primary-deep);
+}
+
+.note {
+  margin-top: 5px;
+  font-size: 0.86rem;
+  color: var(--color-secondary-deep);
+}
