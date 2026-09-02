@@ -32,6 +32,17 @@ test.describe("accessibility scan", () => {
     ).toEqual([]);
   });
 
+  test("dashboard page has no critical/serious axe violations", async ({ page }) => {
+    await page.goto("/dashboard");
+    const results = await new AxeBuilder({ page }).analyze();
+
+    const seriousOrWorse = results.violations.filter((v) => ["critical", "serious"].includes(v.impact ?? ""));
+    expect(
+      seriousOrWorse,
+      `Serious/critical a11y violations:\n${JSON.stringify(seriousOrWorse, null, 2)}`,
+    ).toEqual([]);
+  });
+
   test("booking form errors are announced accessibly", async ({ page }) => {
     await page.goto("/book");
     await page.getByRole("button", { name: /request this appointment/i }).click();

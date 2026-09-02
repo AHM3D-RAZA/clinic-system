@@ -19,6 +19,18 @@ import type { BookingRequest } from "@/types/booking";
  * Concurrency note: writes are synchronous (`writeFileSync`) so two
  * requests can't interleave a partial write. That's the right tradeoff
  * for a small local mock store, not for a real production database.
+ *
+ * Singleton note: the in-memory table lives on `globalThis`, not a
+ * plain module-level `let`. Next.js's per-route bundling can give an
+ * API Route Handler and an App Router page SEPARATE instances of this
+ * module within the same running server — a plain module-level
+ * variable would then be two independent copies, so a booking created
+ * through the API would silently never appear on a page that reads
+ * through the other copy (confirmed while building the dashboard: a
+ * freshly submitted booking wasn't showing up until this fix). Keying
+ * by `STORE_PATH` on `globalThis` means every module instance in the
+ * same process shares one true table, while a genuine process restart
+ * (a fresh `globalThis`) still forces a real reload from disk.
  */
 
 const IS_TEST_ENV = !!process.env.VITEST;
@@ -124,40 +136,64 @@ function saveToDisk(records: BookingRequest[]): void {
   writeFileSync(/* turbopackIgnore: true */ STORE_PATH, JSON.stringify(records, null, 2), "utf-8");
 }
 
-let bookingRequests: BookingRequest[] = loadFromDisk() ?? [...SEED_BOOKING_REQUESTS];
-// Persist the seed immediately on first run so the file exists from
-// the very first read, and so "survives restart" is true even before
-// any booking has ever been created.
-if (!existsSync(/* turbopackIgnore: true */ STORE_PATH)) {
-  saveToDisk(bookingRequests);
+/**
+ * The shared table, held on `globalThis` and keyed by `STORE_PATH` so
+ * every module instance in this process — however many separate
+ * bundles Next.js's per-route splitting produced — reads and writes
+ * through the exact same array reference. See the singleton note
+ * above for why a plain module-level variable isn't safe here.
+ */
+declare global {
+  var __asterMockDbStores: Record<string, BookingRequest[]> | undefined;
+}
+
+function getStore(): BookingRequest[] {
+  const stores = (globalThis.__asterMockDbStores ??= {});
+  if (!(STORE_PATH in stores)) {
+    const initial = loadFromDisk() ?? [...SEED_BOOKING_REQUESTS];
+    stores[STORE_PATH] = initial;
+    // Persist the seed immediately on first run so the file exists
+    // from the very first read, and so "survives restart" is true
+    // even before any booking has ever been created.
+    if (!existsSync(/* turbopackIgnore: true */ STORE_PATH)) {
+      saveToDisk(initial);
+    }
+  }
+  return stores[STORE_PATH]!;
+}
+
+function setStore(records: BookingRequest[]): void {
+  const stores = (globalThis.__asterMockDbStores ??= {});
+  stores[STORE_PATH] = records;
 }
 
 export const bookingRequestsTable = {
   findAll(): BookingRequest[] {
-    return [...bookingRequests];
+    return [...getStore()];
   },
   findById(id: string): BookingRequest | undefined {
-    return bookingRequests.find((b) => b.id === id);
+    return getStore().find((b) => b.id === id);
   },
   findByClinic(clinicId: string): BookingRequest[] {
-    return bookingRequests.filter((b) => b.clinicId === clinicId);
+    return getStore().filter((b) => b.clinicId === clinicId);
   },
   insert(record: BookingRequest): BookingRequest {
-    const next = [...bookingRequests, record];
+    const next = [...getStore(), record];
     // Persist first: if the write fails, the in-memory table stays
     // exactly as it was, so memory and disk never disagree about
     // whether this booking actually got saved.
     saveToDisk(next);
-    bookingRequests = next;
+    setStore(next);
     return record;
   },
   updateStatus(id: string, status: BookingRequest["status"]): BookingRequest | undefined {
-    const existing = bookingRequests.find((b) => b.id === id);
+    const current = getStore();
+    const existing = current.find((b) => b.id === id);
     if (!existing) return undefined;
     const updated: BookingRequest = { ...existing, status, updatedAt: new Date().toISOString() };
-    const next = bookingRequests.map((b) => (b.id === id ? updated : b));
+    const next = current.map((b) => (b.id === id ? updated : b));
     saveToDisk(next);
-    bookingRequests = next;
+    setStore(next);
     return updated;
   },
   /**
@@ -167,7 +203,8 @@ export const bookingRequestsTable = {
    * from the previous one.
    */
   __resetForTests(): void {
-    bookingRequests = [...SEED_BOOKING_REQUESTS];
-    saveToDisk(bookingRequests);
+    const seeded = [...SEED_BOOKING_REQUESTS];
+    setStore(seeded);
+    saveToDisk(seeded);
   },
 };

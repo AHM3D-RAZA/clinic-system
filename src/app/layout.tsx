@@ -3,8 +3,6 @@ import type { ReactNode } from "react";
 import { clinicService } from "@/services/clinicService";
 import { DEFAULT_CLINIC_ID } from "@/config/clinics";
 import { themeToCssVariables } from "@/lib/theme";
-import { ClinicNavigation } from "@/components/layout/ClinicNavigation";
-import { Footer } from "@/components/layout/Footer";
 import { GrainOverlay } from "@/components/shared/GrainOverlay";
 import "./globals.css";
 
@@ -17,10 +15,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Everything rendered here is shared chrome across every surface
- * (public site, booking flow). It's the one place, per request, that
- * resolves "which clinic is this?" — every page and component below it
- * receives clinic data as props instead of looking it up itself.
+ * Shared across EVERY surface — public site and dashboard alike: the
+ * html/body shell, the active clinic's theme as CSS vars, fonts, and
+ * the grain texture. Deliberately does NOT render nav/footer chrome —
+ * the public site's chrome lives in `(site)/layout.tsx`, the
+ * dashboard's in `dashboard/layout.tsx`, since the two surfaces need
+ * different chrome around the same theme.
  */
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const content = await clinicService.getClinicContent(DEFAULT_CLINIC_ID);
@@ -36,9 +36,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </head>
       <body>
         <GrainOverlay />
-        <ClinicNavigation clinic={clinic} nav={content.nav} />
         {children}
-        <Footer clinic={clinic} nav={content.nav} />
       </body>
     </html>
   );

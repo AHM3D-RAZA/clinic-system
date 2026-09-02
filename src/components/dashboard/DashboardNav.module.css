@@ -1,0 +1,165 @@
+/* =========================================================
+   DESKTOP RAIL
+   The dashboard leans on --color-secondary (moss) rather than
+   --color-primary (coral) as its interactive color — same
+   palette as the public site, different accent in charge, so
+   the room reads as related but distinct.
+   ========================================================= */
+.rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 248px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px 18px;
+  background: var(--color-paper);
+  border-right: 1px solid var(--color-line);
+  z-index: 300;
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0 10px;
+}
+.markDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.item svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+a.item:hover {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+.itemActive {
+  background: var(--color-secondary);
+  color: var(--color-paper);
+}
+.itemActive:hover {
+  background: var(--color-secondary);
+  color: var(--color-paper);
+}
+
+.itemSoon {
+  cursor: default;
+  color: var(--color-ink-soft);
+  opacity: 0.62;
+}
+.soonTag {
+  margin-left: auto;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+}
+
+/* =========================================================
+   MOBILE TOP BAR
+   ========================================================= */
+.topBar {
+  display: none;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  color: var(--color-ink);
+}
+.menuButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 16px;
+  transform: translateY(-104%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+.drawer.isOpen {
+  transform: translateY(0);
+}
+.drawer .list {
+  margin-top: 44px;
+}
+.drawer .item {
+  font-size: 1.05rem;
+  padding: 14px 12px;
+}
+
+.drawerClose {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--color-ink);
+}
+.drawerClose svg {
+  width: 26px;
+  height: 26px;
+}
+
+@media (max-width: 900px) {
+  .rail {
+    display: none;
+  }
+  .topBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 300;
+    padding: 14px 5vw;
+    background: color-mix(in srgb, var(--color-paper) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-line);
+  }
+}
