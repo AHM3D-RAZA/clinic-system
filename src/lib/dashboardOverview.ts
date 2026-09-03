@@ -2,7 +2,12 @@ import type { BookingRequest } from "@/types/booking";
 import type { Doctor, ServiceOffering } from "@/types/content";
 import type { DashboardOverviewSummary } from "@/types/dashboard";
 
-const RECENT_LIMIT = 6;
+// The overview's own curation (see lib/activityStream.ts) decides how many
+// of these are actually shown and how many are revealed on "show more" —
+// this is just the upstream pool size, kept comfortably above the
+// activity stream's largest expanded cap (8) so there's room to expand
+// into before hitting a hard "recently in" boundary.
+const RECENT_POOL_LIMIT = 20;
 
 /**
  * Shapes a clinic's raw booking requests into what the overview page
@@ -20,7 +25,7 @@ export function buildOverviewSummary(
   return {
     pending: byNewestFirst.filter((b) => b.status === "pending"),
     today: byNewestFirst.filter((b) => b.preferredDate === todayIso),
-    recent: byNewestFirst.slice(0, RECENT_LIMIT),
+    recent: byNewestFirst.slice(0, RECENT_POOL_LIMIT),
     totalCount: bookings.length,
   };
 }

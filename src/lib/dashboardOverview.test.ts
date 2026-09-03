@@ -58,13 +58,13 @@ describe("buildOverviewSummary", () => {
     expect(summary.recent.map((b) => b.id)).toEqual(["new", "mid", "old"]);
   });
 
-  it("caps recent bookings at 6 even with more on file", () => {
-    const bookings = Array.from({ length: 10 }, (_, i) =>
+  it("caps the recent pool at 20 even with more on file", () => {
+    const bookings = Array.from({ length: 25 }, (_, i) =>
       booking({ id: `b${i}`, createdAt: `2026-01-${String(i + 1).padStart(2, "0")}T00:00:00.000Z` }),
     );
     const summary = buildOverviewSummary(bookings, "2026-06-01");
-    expect(summary.recent).toHaveLength(6);
-    expect(summary.totalCount).toBe(10);
+    expect(summary.recent).toHaveLength(20);
+    expect(summary.totalCount).toBe(25);
   });
 
   it("does not mutate the input array", () => {

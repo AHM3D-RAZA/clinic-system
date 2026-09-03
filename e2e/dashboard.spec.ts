@@ -1,5 +1,21 @@
 import { test, expect } from "@playwright/test";
 
+/**
+ * The dashboard masthead states its own waiting count in prose (see
+ * OverviewGreeting) — "Nothing's waiting on you", "One request is
+ * waiting on you", or "N requests are waiting on you". Reading that
+ * sentence is a more durable test signal than counting rendered stream
+ * items, since the curated stream deliberately doesn't show everything.
+ */
+function parseWaitingCount(text: string | null): number {
+  if (!text) throw new Error("Expected the dashboard greeting's context line to have text.");
+  if (text.startsWith("Nothing's waiting on you")) return 0;
+  if (text.startsWith("One request is waiting on you")) return 1;
+  const match = text.match(/^(\d+) requests are waiting on you/);
+  if (!match) throw new Error(`Could not parse a waiting count from: "${text}"`);
+  return Number(match[1]);
+}
+
 test.describe("smoke: dashboard", () => {
   test("dashboard loads with no fatal JS errors and shows the real overview", async ({ page }) => {
     const pageErrors: Error[] = [];
@@ -31,12 +47,23 @@ test.describe("smoke: dashboard", () => {
     expect(consoleErrors, `Unexpected console errors: ${consoleErrors.join(", ")}`).toHaveLength(0);
   });
 
-  test("a freshly submitted booking request shows up in the dashboard's 'waiting on you' chapter", async ({ page }) => {
-    // Unique per run: the mock store persists across repeated local/CI
-    // runs (same as a real database would), so a fixed name would
-    // eventually collide with a booking an earlier run left behind.
-    const patientName = `Dashboard Test Patient ${Date.now()}`;
+  test("submitting a booking increases the dashboard's waiting-on-you count by one, and the record actually persists", async ({
+    page,
+    request,
+  }) => {
+    // Phase 2 note: "Waiting on you" is curated (initial cap 3, expanded
+    // cap 8) and orders oldest-request-first, so a *freshly* submitted
+    // request is always the newest and can sort past the visible window
+    // once the store has accumulated bookings across repeated runs —
+    // it will not always be individually visible in the stream, by
+    // design. What must hold regardless of queue depth is: (a) the
+    // dashboard's own stated waiting count goes up by exactly one, and
+    // (b) the record is genuinely persisted, not just claimed by the UI.
+    await page.goto("/dashboard");
+    const contextLine = page.locator("h1 + p");
+    const before = parseWaitingCount(await contextLine.textContent());
 
+    const patientName = `Dashboard Test Patient ${Date.now()}`;
     await page.goto("/book");
     await page.getByLabel("Full name").fill(patientName);
     await page.getByLabel("Email").fill("dashboard-test@example.com");
@@ -45,20 +72,30 @@ test.describe("smoke: dashboard", () => {
     await page.getByLabel("Treatment").selectOption({ index: 1 });
     await page.getByLabel("Preferred date").fill("2099-06-15");
     await page.getByRole("radiogroup", { name: "Preferred time of day" }).getByLabel("Morning").check();
-    await page.getByRole("button", { name: /request this appointment/i }).click();
+
+    const [createResponse] = await Promise.all([
+      page.waitForResponse((res) => res.url().includes("/api/bookings") && res.request().method() === "POST"),
+      page.getByRole("button", { name: /request this appointment/i }).click(),
+    ]);
     // Scoped to the post-submission confirmation region specifically —
     // the booking page's static intro copy ("we'll follow up to
     // confirm a specific time") also contains "follow up", so a loose
     // page-wide text match here would pass even if submission failed.
     await expect(page.getByRole("status")).toContainText("You're on our list");
 
+    // Persistence proof, same pattern as booking-flow.spec.ts: read the
+    // record back through the app's own API, not just trust the UI.
+    const createBody = await createResponse.json();
+    expect(createBody.ok).toBe(true);
+    const bookingId = createBody.booking.id;
+    const getResponse = await request.get(`/api/bookings/${bookingId}`);
+    expect(getResponse.ok()).toBe(true);
+    const getBody = await getResponse.json();
+    expect(getBody.booking).toMatchObject({ id: bookingId, status: "pending", patient: { fullName: patientName } });
+
     await page.goto("/dashboard");
-    // The stream is one continuous list, so scope to everything between
-    // the "Waiting on you" heading and the next chapter heading ("Today").
-    const waitingHeading = page.getByRole("heading", { name: "Waiting on you" });
-    await expect(waitingHeading).toBeVisible();
-    const stream = page.locator("main ul").first();
-    await expect(stream.getByText(patientName)).toBeVisible();
+    const after = parseWaitingCount(await contextLine.textContent());
+    expect(after).toBe(before + 1);
   });
 
   test("desktop nav rail lists Overview as active and the unimplemented items as honest placeholders", async ({

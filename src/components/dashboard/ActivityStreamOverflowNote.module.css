@@ -1,0 +1,28 @@
+.item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 22px;
+}
+
+.rail {
+  display: flex;
+  justify-content: center;
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 9px;
+  background: var(--color-line);
+}
+
+.message {
+  padding-top: 4px;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--color-ink-soft);
+  max-width: 46ch;
+}
