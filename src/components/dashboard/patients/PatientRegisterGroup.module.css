@@ -1,0 +1,36 @@
+.section {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.section + .section {
+  margin-top: 4px;
+}
+
+.letter {
+  font-family: var(--font-mark);
+  font-size: 1.6rem;
+  color: var(--color-primary-deep);
+  width: 32px;
+  flex-shrink: 0;
+  padding-top: 12px;
+  transform: rotate(-2deg);
+}
+
+.rows {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .section {
+    gap: 12px;
+  }
+
+  .letter {
+    width: 22px;
+    font-size: 1.3rem;
+  }
+}
