@@ -1,0 +1,13 @@
+.header {
+  margin-bottom: 28px;
+}
+
+.heading {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+}
+
+.summary {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: var(--color-ink-soft);
+}

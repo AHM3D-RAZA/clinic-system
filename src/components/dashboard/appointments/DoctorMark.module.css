@@ -1,0 +1,19 @@
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  letter-spacing: 0.02em;
+}
+
+.mark[data-unassigned="true"] {
+  background: var(--color-line);
+  color: var(--color-ink-soft);
+}
