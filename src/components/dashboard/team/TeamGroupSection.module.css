@@ -1,0 +1,26 @@
+.section {
+  margin-top: 34px;
+}
+
+.section:first-child {
+  margin-top: 0;
+}
+
+.label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 1.2rem;
+}
+
+.count {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  transform: none;
+}
+
+.list {
+  max-width: 720px;
+}
