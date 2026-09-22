@@ -61,3 +61,64 @@ export function filterTeamMembers(
     );
   });
 }
+
+/**
+ * Full-sentence version of a member's availability for the detail
+ * layer — the roster row uses a compact "Off today · back Thursday"
+ * fragment; the detail view reads better as an actual sentence.
+ */
+export function teamAvailabilitySentence(member: TeamMember): string {
+  const note = member.availabilityNote;
+  const capitalizedNote = note ? note.charAt(0).toUpperCase() + note.slice(1) : "";
+
+  switch (member.availability) {
+    case "inToday":
+      return "In today.";
+    case "offToday":
+      return note ? `Not in today. ${capitalizedNote}.` : "Not in today.";
+    case "onLeave":
+      return note ? `On leave. ${capitalizedNote}.` : "On leave.";
+    default:
+      return "";
+  }
+}
+
+/**
+ * Places a person within the wider roster for the detail layer —
+ * genuinely new context (how big is their team, who else is in it),
+ * not a restatement of the row's own fields.
+ */
+export function teamPeerContextLine(member: TeamMember, allMembers: TeamMember[]): string {
+  const peers = allMembers.filter((m) => m.group === member.group && m.id !== member.id);
+  const groupLabel = TEAM_GROUP_LABELS[member.group].toLowerCase();
+
+  if (peers.length === 0) {
+    return `The only person currently in ${groupLabel}.`;
+  }
+  const peerNames = peers.map((p) => p.name.replace(/^Dr\.\s*/, ""));
+  const names =
+    peerNames.length === 1
+      ? peerNames[0]
+      : `${peerNames.slice(0, -1).join(", ")} and ${peerNames[peerNames.length - 1]}`;
+  return `Part of ${groupLabel}, alongside ${names}.`;
+}
+
+/**
+ * How to actually reach this person for the detail layer. Clinical
+ * staff usually don't take direct calls, so when a member has no
+ * `contact` of their own, this falls back to whoever on the roster
+ * does front-desk work — a real answer instead of a blank field.
+ */
+export function teamReachabilityLine(
+  member: TeamMember,
+  allMembers: TeamMember[],
+): { text: string; href?: string } {
+  if (member.contact) {
+    return { text: member.contact.label, href: member.contact.href };
+  }
+  const frontDesk = allMembers.find((m) => m.group === "frontOfHouse" && m.contact);
+  if (frontDesk?.contact) {
+    return { text: `Reachable through the front desk — ${frontDesk.contact.label}`, href: frontDesk.contact.href };
+  }
+  return { text: "Reachable through the front desk." };
+}

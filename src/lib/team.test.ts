@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { filterTeamMembers, groupTeamMembers, teamContextLine } from "./team";
+import {
+  filterTeamMembers,
+  groupTeamMembers,
+  teamAvailabilitySentence,
+  teamContextLine,
+  teamPeerContextLine,
+  teamReachabilityLine,
+} from "./team";
 import type { TeamMember } from "@/types/team";
 
 function member(overrides: Partial<TeamMember>): TeamMember {
@@ -100,5 +107,76 @@ describe("teamContextLine", () => {
     const line = teamContextLine(members);
     expect(line).toContain("1 doctor,");
     expect(line).toContain("1 person is out today.");
+  });
+});
+
+describe("teamAvailabilitySentence", () => {
+  it("reads simply for someone in today", () => {
+    expect(teamAvailabilitySentence(member({ availability: "inToday" }))).toBe("In today.");
+  });
+
+  it("includes the note for someone off today", () => {
+    const line = teamAvailabilitySentence(
+      member({ availability: "offToday", availabilityNote: "back Thursday" }),
+    );
+    expect(line).toBe("Not in today. Back Thursday.");
+  });
+
+  it("falls back gracefully when off today with no note", () => {
+    expect(teamAvailabilitySentence(member({ availability: "offToday" }))).toBe("Not in today.");
+  });
+
+  it("includes the note for someone on leave", () => {
+    const line = teamAvailabilitySentence(
+      member({ availability: "onLeave", availabilityNote: "back in a few weeks" }),
+    );
+    expect(line).toBe("On leave. Back in a few weeks.");
+  });
+});
+
+describe("teamPeerContextLine", () => {
+  it("names the other people in the same group", () => {
+    const all = [
+      member({ id: "a", name: "Dr. Nadia Farooqi", group: "doctors" }),
+      member({ id: "b", name: "Dr. Rehan Khalid", group: "doctors" }),
+      member({ id: "c", name: "Dr. Sana Malik", group: "doctors" }),
+    ];
+    const line = teamPeerContextLine(all[0], all);
+    expect(line).toBe("Part of doctors, alongside Rehan Khalid and Sana Malik.");
+  });
+
+  it("says so when the person is the only one in their group", () => {
+    const all = [member({ id: "a", group: "frontOfHouse" })];
+    expect(teamPeerContextLine(all[0], all)).toBe("The only person currently in front of house.");
+  });
+
+  it("does not include the member themselves in the peer list", () => {
+    const all = [
+      member({ id: "a", group: "careTeam", name: "Amara Siddiqui" }),
+      member({ id: "b", group: "careTeam", name: "Bilal Aslam" }),
+    ];
+    expect(teamPeerContextLine(all[0], all)).not.toContain("Amara");
+  });
+});
+
+describe("teamReachabilityLine", () => {
+  it("uses the member's own contact when they have one", () => {
+    const all = [member({ id: "a", contact: { label: "Ext. 101", href: "tel:123" } })];
+    expect(teamReachabilityLine(all[0], all)).toEqual({ text: "Ext. 101", href: "tel:123" });
+  });
+
+  it("falls back to the front desk when the member has no contact", () => {
+    const clinician = member({ id: "a", group: "careTeam" });
+    const frontDesk = member({ id: "b", group: "frontOfHouse", contact: { label: "Ext. 101", href: "tel:123" } });
+    const result = teamReachabilityLine(clinician, [clinician, frontDesk]);
+    expect(result.text).toContain("front desk");
+    expect(result.text).toContain("Ext. 101");
+    expect(result.href).toBe("tel:123");
+  });
+
+  it("falls back to a generic message when nobody has contact info", () => {
+    const clinician = member({ id: "a", group: "careTeam" });
+    const result = teamReachabilityLine(clinician, [clinician]);
+    expect(result).toEqual({ text: "Reachable through the front desk." });
   });
 });

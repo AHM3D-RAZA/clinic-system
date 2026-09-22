@@ -1,0 +1,18 @@
+.quiet {
+  max-width: 46ch;
+  padding: 8px 0 0 28px;
+  border-left: 2px dashed var(--color-line);
+}
+
+.quietTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+
+.quietBody {
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}

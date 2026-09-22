@@ -14,14 +14,15 @@ interface TeamPageProps {
 
 /**
  * The team workspace's only client boundary — everything above this
- * (data fetching) stays server-side. Owns just two bits of UI state
- * (which group tab is active, what's typed into search); the actual
- * grouping/filtering logic lives in lib/team.ts so this stays a thin
- * wiring layer, matching how DashboardOverview is structured.
+ * (data fetching) stays server-side. Owns three bits of UI state
+ * (active group tab, search text, and which member is expanded); the
+ * actual grouping/filtering/context logic lives in lib/team.ts so this
+ * stays a thin wiring layer, matching how DashboardOverview is structured.
  */
 export function TeamPage({ members }: TeamPageProps) {
   const [groupFilter, setGroupFilter] = useState<TeamGroupKey | "all">("all");
   const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const visibleMembers = useMemo(
     () => filterTeamMembers(members, groupFilter, query),
@@ -29,6 +30,10 @@ export function TeamPage({ members }: TeamPageProps) {
   );
   const sections = useMemo(() => groupTeamMembers(visibleMembers), [visibleMembers]);
   const contextLine = useMemo(() => teamContextLine(members), [members]);
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedId((current) => (current === id ? null : id));
+  };
 
   return (
     <div>
@@ -45,7 +50,14 @@ export function TeamPage({ members }: TeamPageProps) {
         <TeamEmptyState query={query} />
       ) : (
         sections.map((section) => (
-          <TeamGroupSection key={section.key} groupKey={section.key} members={section.members} />
+          <TeamGroupSection
+            key={section.key}
+            groupKey={section.key}
+            members={section.members}
+            allMembers={members}
+            selectedId={selectedId}
+            onToggleSelect={handleToggleSelect}
+          />
         ))
       )}
     </div>

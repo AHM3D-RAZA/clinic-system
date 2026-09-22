@@ -1,0 +1,22 @@
+.stream {
+  max-width: 640px;
+  position: relative;
+}
+
+.stream::before {
+  content: "";
+  position: absolute;
+  left: 79px;
+  top: 40px;
+  bottom: 24px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary) 45%, var(--color-ink-soft) 85%);
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .stream::before {
+    display: none;
+  }
+}
