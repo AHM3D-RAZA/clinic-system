@@ -1,12 +1,20 @@
 import type { Patient } from "@/types/patient";
 import type { Doctor } from "@/types/content";
 import type { SwatchKey } from "@/types/content";
+import type { PreferredTimeSlot } from "@/types/booking";
 
 /** One alphabetical section of the patient register. */
 export interface PatientGroup {
   letter: string;
   patients: Patient[];
 }
+
+/** Compact time-of-day label for a `PreferredTimeSlot`, e.g. in a register row. */
+export const SHORT_TIME_LABEL: Record<PreferredTimeSlot, string> = {
+  morning: "Morning",
+  afternoon: "Afternoon",
+  evening: "Evening",
+};
 
 /**
  * Maps each doctor id to their content swatch, so a patient row's
