@@ -42,23 +42,34 @@ const SERVICE = {
 export const APPOINTMENTS: Appointment[] = [
   // Two days ago
   { id: "apt_0001", clinicId: "aster", patientName: "Imran Qureshi", patientType: "existing", doctorId: DOCTOR.nadia, serviceId: SERVICE.checkups, date: daysFromTodayIso(-2), time: "09:00", durationMinutes: 30, status: "completed" },
-  { id: "apt_0002", clinicId: "aster", patientName: "Ayesha Noor", patientType: "new", doctorId: DOCTOR.sana, serviceId: SERVICE.kids, date: daysFromTodayIso(-2), time: "11:30", durationMinutes: 30, status: "completed" },
-  { id: "apt_0003", clinicId: "aster", patientName: "Bilal Ahmed", patientType: "existing", doctorId: DOCTOR.rehan, serviceId: SERVICE.rootCanal, date: daysFromTodayIso(-2), time: "15:00", durationMinutes: 60, status: "cancelled" },
+  { id: "apt_0002", clinicId: "aster", patientName: "Ayesha Noor", patientType: "new", doctorId: DOCTOR.sana, serviceId: SERVICE.kids, date: daysFromTodayIso(-2), time: "11:30", durationMinutes: 30, status: "completed", notes: "First dental visit — parent asked for a slow, narrated walkthrough before any instruments." },
+  { id: "apt_0003", clinicId: "aster", patientName: "Bilal Ahmed", patientType: "existing", doctorId: DOCTOR.rehan, serviceId: SERVICE.rootCanal, date: daysFromTodayIso(-2), time: "15:00", durationMinutes: 60, status: "cancelled", notes: "Patient called to cancel — flu symptoms. Wants to rebook once recovered." },
 
   // Yesterday
   { id: "apt_0004", clinicId: "aster", patientName: "Sara Malik", patientType: "existing", doctorId: DOCTOR.nadia, serviceId: SERVICE.fillings, date: daysFromTodayIso(-1), time: "09:30", durationMinutes: 45, status: "completed" },
-  { id: "apt_0005", clinicId: "aster", patientName: "Farhan Iqbal", patientType: "existing", doctorId: DOCTOR.rehan, serviceId: SERVICE.rootCanal, date: daysFromTodayIso(-1), time: "10:30", durationMinutes: 60, status: "completed" },
+  { id: "apt_0005", clinicId: "aster", patientName: "Farhan Iqbal", patientType: "existing", doctorId: DOCTOR.rehan, serviceId: SERVICE.rootCanal, date: daysFromTodayIso(-1), time: "10:30", durationMinutes: 60, status: "completed", notes: "Local anaesthetic only — patient has a documented reaction to epinephrine." },
   { id: "apt_0006", clinicId: "aster", patientName: "Zoya Sheikh", patientType: "new", doctorId: DOCTOR.sana, serviceId: SERVICE.kids, date: daysFromTodayIso(-1), time: "14:00", durationMinutes: 30, status: "completed" },
   { id: "apt_0007", clinicId: "aster", patientName: "Hina Raza", patientType: "existing", doctorId: DOCTOR.nadia, serviceId: SERVICE.whitening, date: daysFromTodayIso(-1), time: "16:15", durationMinutes: 45, status: "cancelled" },
 
   // Today
   { id: "apt_0008", clinicId: "aster", patientName: "Owen Bricks", patientType: "new", doctorId: DOCTOR.nadia, serviceId: SERVICE.checkups, date: daysFromTodayIso(0), time: "09:00", durationMinutes: 30, status: "confirmed" },
   { id: "apt_0009", clinicId: "aster", patientName: "Maya Chen", patientType: "existing", doctorId: DOCTOR.sana, serviceId: SERVICE.kids, date: daysFromTodayIso(0), time: "09:45", durationMinutes: 30, status: "confirmed" },
-  { id: "apt_0010", clinicId: "aster", patientName: "Daniyal Sheikh", patientType: "existing", doctorId: DOCTOR.rehan, serviceId: SERVICE.rootCanal, date: daysFromTodayIso(0), time: "10:30", durationMinutes: 60, status: "confirmed" },
+  { id: "apt_0010", clinicId: "aster", patientName: "Daniyal Sheikh", patientType: "existing", doctorId: DOCTOR.rehan, serviceId: SERVICE.rootCanal, date: daysFromTodayIso(0), time: "10:30", durationMinutes: 60, status: "confirmed", notes: "Second session of a two-part root canal — crown impression is already on file." },
   { id: "apt_0011", clinicId: "aster", patientName: "Kiran Aziz", patientType: "new", doctorId: DOCTOR.nadia, serviceId: SERVICE.fillings, date: daysFromTodayIso(0), time: "12:00", durationMinutes: 45, status: "pending" },
-  { id: "apt_0012", clinicId: "aster", patientName: "Noah Whitfield", patientType: "existing", doctorId: DOCTOR.sana, serviceId: SERVICE.checkups, date: daysFromTodayIso(0), time: "13:30", durationMinutes: 30, status: "confirmed" },
-  { id: "apt_0013", clinicId: "aster", patientName: "Anum Fatima", patientType: "new", doctorId: DOCTOR.rehan, serviceId: SERVICE.ortho, date: daysFromTodayIso(0), time: "15:00", durationMinutes: 45, status: "pending" },
-  { id: "apt_0014", clinicId: "aster", patientName: "Grace Coleman", patientType: "existing", doctorId: DOCTOR.nadia, serviceId: SERVICE.whitening, date: daysFromTodayIso(0), time: "16:30", durationMinutes: 45, status: "confirmed" },
+  {
+    id: "apt_0012",
+    clinicId: "aster",
+    patientName: "Alexandria Whitfield-Montgomery",
+    patientType: "existing",
+    doctorId: DOCTOR.sana,
+    serviceId: SERVICE.checkups,
+    date: daysFromTodayIso(0),
+    time: "13:30",
+    durationMinutes: 30,
+    status: "confirmed",
+  },
+  { id: "apt_0013", clinicId: "aster", patientName: "Anum Fatima", patientType: "new", doctorId: DOCTOR.rehan, serviceId: SERVICE.ortho, date: daysFromTodayIso(0), time: "15:00", durationMinutes: 45, status: "pending", notes: "Wants to discuss clear aligners specifically — has a wedding in six weeks." },
+  { id: "apt_0014", clinicId: "aster", patientName: "Grace Coleman", patientType: "existing", doctorId: DOCTOR.nadia, serviceId: SERVICE.whitening, date: daysFromTodayIso(0), time: "16:30", durationMinutes: 45, status: "confirmed", notes: "Mentioned mild sensitivity to whitening gel last visit — check before starting." },
 
   // Tomorrow
   { id: "apt_0015", clinicId: "aster", patientName: "Tariq Mehmood", patientType: "existing", doctorId: DOCTOR.rehan, serviceId: SERVICE.rootCanal, date: daysFromTodayIso(1), time: "09:00", durationMinutes: 60, status: "confirmed" },

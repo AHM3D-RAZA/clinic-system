@@ -1,0 +1,74 @@
+.panel {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+  max-width: 54ch;
+  animation: open 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sentence {
+  font-size: 0.92rem;
+  color: var(--color-ink);
+  line-height: 1.5;
+}
+
+.notes {
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--color-ink-soft);
+  line-height: 1.5;
+}
+
+.statusLine {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.statusWord {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.statusWord[data-status="pending"] {
+  color: var(--color-primary-deep);
+}
+.statusWord[data-status="confirmed"] {
+  color: var(--color-secondary-deep);
+}
+.statusWord[data-status="completed"],
+.statusWord[data-status="cancelled"] {
+  color: var(--color-ink-soft);
+}
+
+.action {
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--color-line);
+  padding-bottom: 1px;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.action:hover,
+.action:focus-visible {
+  color: var(--color-primary-deep);
+  border-color: var(--color-primary);
+}

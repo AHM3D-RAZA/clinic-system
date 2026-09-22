@@ -26,4 +26,6 @@ export interface Appointment {
   time: string;
   durationMinutes: number;
   status: BookingStatus;
+  /** Optional operational context surfaced in the detail view (allergy flags, patient requests, prep notes). */
+  notes?: string;
 }
