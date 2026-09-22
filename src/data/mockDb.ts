@@ -93,12 +93,122 @@ const SEED_BOOKING_REQUESTS: BookingRequest[] = [
     createdAt: daysAgoIso(1),
     updatedAt: daysAgoIso(1),
   },
+  // Bookings-workspace seed data — a realistic front-desk spread across
+  // every status so /dashboard/bookings has something genuine to show
+  // on first load, not just the two records above.
+  {
+    id: "bkg_seed0003",
+    clinicId: "aster",
+    patient: {
+      fullName: "Farhan Odom",
+      email: "farhan.odom@example.com",
+      phone: "+1 (555) 072-3391",
+      patientType: "new",
+    },
+    serviceId: "root-canal",
+    preferredDate: daysAgoDateIso(2),
+    preferredTime: "morning",
+    notes: "Sharp pain when biting down on the lower left side for about a week now.",
+    status: "pending",
+    createdAt: daysAgoIso(6),
+    updatedAt: daysAgoIso(6),
+  },
+  {
+    id: "bkg_seed0004",
+    clinicId: "aster",
+    patient: {
+      fullName: "Priya Farrow",
+      email: "priya.farrow@example.com",
+      phone: "+1 (555) 084-2210",
+      patientType: "existing",
+    },
+    serviceId: "orthodontics-aligners",
+    preferredDate: nextWeekdayIso(9),
+    preferredTime: "evening",
+    status: "pending",
+    createdAt: daysAgoIso(0),
+    updatedAt: daysAgoIso(0),
+  },
+  {
+    id: "bkg_seed0005",
+    clinicId: "aster",
+    patient: {
+      fullName: "Deniz Nakamura",
+      email: "deniz.nakamura@example.com",
+      phone: "+1 (555) 091-6647",
+      patientType: "new",
+    },
+    serviceId: "fillings-repairs",
+    preferredDate: nextWeekdayIso(2),
+    preferredTime: "afternoon",
+    notes: "Chipped a tooth on popcorn — not painful, just sharp-edged.",
+    status: "contacted",
+    createdAt: daysAgoIso(3),
+    updatedAt: daysAgoIso(2),
+  },
+  {
+    id: "bkg_seed0006",
+    clinicId: "aster",
+    patient: {
+      fullName: "Hana Voss",
+      email: "hana.voss@example.com",
+      phone: "+1 (555) 065-1183",
+      patientType: "existing",
+    },
+    serviceId: "kids-dentistry",
+    preferredDate: nextWeekdayIso(5),
+    preferredTime: "morning",
+    status: "confirmed",
+    assignedDoctorId: "rehan-khalid",
+    createdAt: daysAgoIso(5),
+    updatedAt: daysAgoIso(3),
+  },
+  {
+    id: "bkg_seed0007",
+    clinicId: "aster",
+    patient: {
+      fullName: "Tariq Baig",
+      email: "tariq.baig@example.com",
+      phone: "+1 (555) 038-9924",
+      patientType: "existing",
+    },
+    serviceId: "checkups-cleanings",
+    preferredDate: daysAgoDateIso(10),
+    preferredTime: "afternoon",
+    status: "completed",
+    assignedDoctorId: "sana-malik",
+    createdAt: daysAgoIso(12),
+    updatedAt: daysAgoIso(10),
+  },
+  {
+    id: "bkg_seed0008",
+    clinicId: "aster",
+    patient: {
+      fullName: "Rosa Suleiman",
+      email: "rosa.suleiman@example.com",
+      phone: "+1 (555) 057-4402",
+      patientType: "new",
+    },
+    serviceId: "cosmetic-whitening",
+    preferredDate: daysAgoDateIso(4),
+    preferredTime: "evening",
+    status: "cancelled",
+    createdAt: daysAgoIso(8),
+    updatedAt: daysAgoIso(5),
+  },
 ];
 
 function daysAgoIso(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() - days);
   return d.toISOString();
+}
+
+/** Same idea as `daysAgoIso`, but a date-only string for `preferredDate` fields (used to seed overdue bookings). */
+function daysAgoDateIso(days: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d.toISOString().slice(0, 10);
 }
 
 function nextWeekdayIso(daysAhead: number): string {

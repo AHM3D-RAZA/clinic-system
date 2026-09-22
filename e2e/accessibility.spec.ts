@@ -34,6 +34,13 @@ test.describe("accessibility scan", () => {
 
   test("dashboard page has no critical/serious axe violations", async ({ page }) => {
     await page.goto("/dashboard");
+    // The activity stream's entries fade in with a staggered entrance
+    // animation (later entries have a longer animation-delay); scanning
+    // immediately can catch an entry mid-fade and misreport its
+    // *transient* opacity as a real color-contrast violation. Wait for
+    // the animation to settle first so the scan reflects the page's
+    // actual resting state.
+    await page.waitForTimeout(1500);
     const results = await new AxeBuilder({ page }).analyze();
 
     const seriousOrWorse = results.violations.filter((v) => ["critical", "serious"].includes(v.impact ?? ""));

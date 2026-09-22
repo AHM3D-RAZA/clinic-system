@@ -1,0 +1,115 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.dotPending {
+  background: var(--color-primary);
+}
+.dotContacted {
+  background: var(--color-accent);
+}
+.dotConfirmed {
+  background: var(--color-secondary);
+}
+.dotCompleted {
+  background: var(--color-ink-soft);
+  opacity: 0.55;
+}
+.dotCancelled {
+  background: var(--color-ink-soft);
+  opacity: 0.3;
+}
+
+.main {
+  min-width: 0;
+}
+
+.who {
+  font-size: 1rem;
+  display: flex;
+  align-items: baseline;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.service {
+  color: var(--color-ink-soft);
+}
+
+.contact {
+  margin-top: 3px;
+  font-size: 0.84rem;
+  color: var(--color-ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.notes {
+  margin-top: 6px;
+  font-size: 0.86rem;
+  font-style: italic;
+  color: var(--color-ink-soft);
+  max-width: 56ch;
+}
+
+.meta {
+  flex-shrink: 0;
+  text-align: right;
+  min-width: 220px;
+}
+
+.when {
+  font-size: 0.84rem;
+  color: var(--color-ink-soft);
+}
+
+.whenOverdue {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-primary-deep);
+}
+
+.status {
+  margin-top: 4px;
+  font-size: 0.84rem;
+  color: var(--color-secondary-deep);
+}
+
+.received {
+  margin-top: 4px;
+  font-size: 0.76rem;
+  color: var(--color-ink-soft);
+  opacity: 0.8;
+}
+
+@media (max-width: 640px) {
+  .row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .meta {
+    text-align: left;
+    min-width: 0;
+  }
+}

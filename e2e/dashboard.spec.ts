@@ -107,9 +107,13 @@ test.describe("smoke: dashboard", () => {
 
     const rail = page.getByRole("navigation", { name: "Dashboard navigation" });
     await expect(rail.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "page");
-    await expect(rail.getByText("Patients")).toBeVisible();
-    await expect(rail.getByRole("link", { name: "Patients" })).toHaveCount(0);
-    await expect(rail.getByText("Soon").first()).toBeVisible();
+    // Patients, Bookings, Appointments, and Team are all real now — only
+    // Settings remains an honest "soon" placeholder, not a dead link.
+    await expect(rail.getByRole("link", { name: "Patients" })).toBeVisible();
+    await expect(rail.getByRole("link", { name: "Bookings" })).toBeVisible();
+    await expect(rail.getByText("Settings")).toBeVisible();
+    await expect(rail.getByRole("link", { name: "Settings" })).toHaveCount(0);
+    await expect(rail.getByText("Soon")).toBeVisible();
   });
 
   test("mobile menu opens the dashboard nav drawer and closes on Escape", async ({ page, isMobile }) => {
