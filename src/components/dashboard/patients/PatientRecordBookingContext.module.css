@@ -1,0 +1,31 @@
+.eyebrow {
+  font-family: var(--font-mark);
+  font-size: 1.15rem;
+  color: var(--color-secondary-deep);
+  transform: rotate(-1.5deg);
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 520px;
+}
+
+.item {
+  padding-left: 14px;
+  border-left: 2px solid var(--color-line);
+}
+
+.itemPrimary {
+  font-size: 0.92rem;
+  color: var(--color-ink);
+}
+
+.itemSecondary {
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+}

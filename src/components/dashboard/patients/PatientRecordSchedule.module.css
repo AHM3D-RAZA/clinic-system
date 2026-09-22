@@ -1,0 +1,50 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 36px;
+}
+
+.eyebrow {
+  font-family: var(--font-mark);
+  font-size: 1.15rem;
+  color: var(--color-secondary-deep);
+  transform: rotate(-1.5deg);
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item {
+  padding-left: 14px;
+  border-left: 2px solid var(--color-line);
+}
+
+.itemPrimary {
+  font-size: 0.96rem;
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.itemSecondary {
+  margin-top: 2px;
+  font-size: 0.84rem;
+  color: var(--color-ink-soft);
+}
+
+.fallback {
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}

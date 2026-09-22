@@ -11,7 +11,7 @@ export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
   { id: "overview", label: "Overview", href: "/dashboard", icon: "overview", implemented: true },
   { id: "patients", label: "Patients", href: "/dashboard/patients", icon: "patients", implemented: true },
   { id: "bookings", label: "Bookings", href: "/dashboard/bookings", icon: "bookings", implemented: false },
-  { id: "appointments", label: "Appointments", href: "/dashboard/appointments", icon: "appointments", implemented: false },
-  { id: "team", label: "Team", href: "/dashboard/team", icon: "team", implemented: false },
+  { id: "appointments", label: "Appointments", href: "/dashboard/appointments", icon: "appointments", implemented: true },
+  { id: "team", label: "Team", href: "/dashboard/team", icon: "team", implemented: true },
   { id: "settings", label: "Settings", href: "/dashboard/settings", icon: "settings", implemented: false },
 ];
