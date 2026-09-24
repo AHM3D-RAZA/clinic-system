@@ -42,16 +42,21 @@ export function ClinicNavigation({ clinic, nav, bookingHref = "/book" }: ClinicN
     <>
       <nav className={cn(styles.nav, isScrolled && styles.isScrolled)}>
         <Link href="/#home" className={styles.mark}>
-          <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
-            <path
-              d="M20 4C13 4 8 10 8 17c0 9 8 15 12 19 4-4 12-10 12-19 0-7-5-13-12-13Z"
-              fill="var(--color-primary)"
-            />
-            <path
-              d="M20 12c-3 0-5 2.5-5 6 0 4 3 7 5 9 2-2 5-5 5-9 0-3.5-2-6-5-6Z"
-              fill="var(--color-cream)"
-            />
-          </svg>
+          {clinic.brandMark?.type === "image" ? (
+            // eslint-disable-next-line @next/next/no-img-element -- clinic logos are arbitrary external URLs, not project-local assets next/image can optimize
+            <img src={clinic.brandMark.src} alt={clinic.brandMark.alt} className={styles.markImage} />
+          ) : (
+            <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path
+                d="M20 4C13 4 8 10 8 17c0 9 8 15 12 19 4-4 12-10 12-19 0-7-5-13-12-13Z"
+                fill="var(--color-primary)"
+              />
+              <path
+                d="M20 12c-3 0-5 2.5-5 6 0 4 3 7 5 9 2-2 5-5 5-9 0-3.5-2-6-5-6Z"
+                fill="var(--color-cream)"
+              />
+            </svg>
+          )}
           {clinic.shortName}
         </Link>
 

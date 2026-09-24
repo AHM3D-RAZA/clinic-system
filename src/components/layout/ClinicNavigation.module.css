@@ -32,6 +32,13 @@
   width: 30px;
   height: 30px;
 }
+.markImage {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
 
 .links {
   display: flex;

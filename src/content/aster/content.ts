@@ -30,6 +30,8 @@ export const asterMarqueeItems: string[] = [
   "Nervous patients especially welcome",
 ];
 
+export const asterIntroHeadline = "We built the studio we'd want to visit.";
+
 export const asterIntroCopy =
   'Aster started because our founder, Dr. Nadia Farooqi, kept hearing the same thing from patients: "I put this off because I hate the dentist." So we made a place that doesn\'t feel like one — warm light, real conversations, and a team that explains things in plain language before they ever pick up a tool.';
 

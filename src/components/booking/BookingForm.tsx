@@ -11,6 +11,8 @@ import styles from "./BookingForm.module.css";
 
 interface BookingFormProps {
   clinicId: string;
+  /** Used only for the "Have you visited {name} before?" question; falls back to generic phrasing when omitted (e.g. in tests). */
+  clinicShortName?: string;
   services: ServiceOffering[];
   onSuccess: (booking: BookingRequest) => void;
 }
@@ -21,7 +23,7 @@ interface BookingFormProps {
  * summary are their own small components. See those files for the
  * actual field markup and business logic.
  */
-export function BookingForm({ clinicId, services, onSuccess }: BookingFormProps) {
+export function BookingForm({ clinicId, clinicShortName, services, onSuccess }: BookingFormProps) {
   const searchParams = useSearchParams();
   const preselectedServiceId = searchParams.get("service") ?? "";
   const knownServiceIds = services.map((s) => s.id);
@@ -33,7 +35,13 @@ export function BookingForm({ clinicId, services, onSuccess }: BookingFormProps)
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <BookingFormErrorSummary errors={errors} serverMessage={serverMessage} summaryRef={errorSummaryRef} />
 
-      <PatientDetailsFieldset values={values} errors={errors} fieldId={fieldId} setField={setField} />
+      <PatientDetailsFieldset
+        values={values}
+        errors={errors}
+        fieldId={fieldId}
+        setField={setField}
+        clinicShortName={clinicShortName}
+      />
       <AppointmentDetailsFieldset values={values} errors={errors} services={services} fieldId={fieldId} setField={setField} />
 
       <button type="submit" className={styles.submit} disabled={status === "submitting"}>

@@ -35,7 +35,12 @@ export function DashboardNav({ clinic }: DashboardNavProps) {
 
   const brand = (
     <Link href="/dashboard" className={styles.mark}>
-      <span className={styles.markDot} aria-hidden="true" />
+      {clinic.brandMark?.type === "image" ? (
+        // eslint-disable-next-line @next/next/no-img-element -- clinic logos are arbitrary external URLs, not project-local assets next/image can optimize
+        <img src={clinic.brandMark.src} alt={clinic.brandMark.alt} className={styles.markImage} />
+      ) : (
+        <span className={styles.markDot} aria-hidden="true" />
+      )}
       {clinic.shortName}
     </Link>
   );
