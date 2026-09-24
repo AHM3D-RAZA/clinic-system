@@ -33,29 +33,31 @@ export function AppointmentDayNav({ days, selectedIso, onSelect, onPrevDay, onNe
         </button>
       </div>
 
-      <div className={styles.strip} role="tablist" aria-label="Select a day">
-        {days.map((day) => {
-          const isSelected = day.iso === selectedIso;
-          return (
-            <button
-              key={day.iso}
-              type="button"
-              role="tab"
-              aria-selected={isSelected}
-              className={cn(styles.day, isSelected && styles.dayActive)}
-              onClick={() => onSelect(day.iso)}
-            >
-              <span className={styles.weekday}>{day.weekdayLabel}</span>
-              <span className={styles.dayNumber}>{day.dayNumber}</span>
-              {day.isToday && <span className={styles.todayDot} aria-hidden="true" />}
-              {day.count > 0 && (
-                <span className={styles.count}>
-                  {day.count} {day.count === 1 ? "appt" : "appts"}
-                </span>
-              )}
-            </button>
-          );
-        })}
+      <div className={styles.stripWrap}>
+        <div className={styles.strip} role="tablist" aria-label="Select a day">
+          {days.map((day) => {
+            const isSelected = day.iso === selectedIso;
+            return (
+              <button
+                key={day.iso}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                className={cn(styles.day, isSelected && styles.dayActive)}
+                onClick={() => onSelect(day.iso)}
+              >
+                <span className={styles.weekday}>{day.weekdayLabel}</span>
+                <span className={styles.dayNumber}>{day.dayNumber}</span>
+                {day.isToday && <span className={styles.todayDot} aria-hidden="true" />}
+                {day.count > 0 && (
+                  <span className={styles.count}>
+                    {day.count} {day.count === 1 ? "appt" : "appts"}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

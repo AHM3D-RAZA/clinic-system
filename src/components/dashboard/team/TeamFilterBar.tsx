@@ -19,28 +19,30 @@ interface TeamFilterBarProps {
 export function TeamFilterBar({ activeGroup, onGroupChange, query, onQueryChange }: TeamFilterBarProps) {
   return (
     <div className={styles.bar}>
-      <div className={styles.tabs} role="tablist" aria-label="Filter by team">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeGroup === "all"}
-          className={cn(styles.tab, activeGroup === "all" && styles.tabActive)}
-          onClick={() => onGroupChange("all")}
-        >
-          Everyone
-        </button>
-        {TEAM_GROUP_ORDER.map((key) => (
+      <div className={styles.tabsWrap}>
+        <div className={styles.tabs} role="tablist" aria-label="Filter by team">
           <button
-            key={key}
             type="button"
             role="tab"
-            aria-selected={activeGroup === key}
-            className={cn(styles.tab, activeGroup === key && styles.tabActive)}
-            onClick={() => onGroupChange(key)}
+            aria-selected={activeGroup === "all"}
+            className={cn(styles.tab, activeGroup === "all" && styles.tabActive)}
+            onClick={() => onGroupChange("all")}
           >
-            {TEAM_GROUP_LABELS[key]}
+            Everyone
           </button>
-        ))}
+          {TEAM_GROUP_ORDER.map((key) => (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={activeGroup === key}
+              className={cn(styles.tab, activeGroup === key && styles.tabActive)}
+              onClick={() => onGroupChange(key)}
+            >
+              {TEAM_GROUP_LABELS[key]}
+            </button>
+          ))}
+        </div>
       </div>
 
       <label className={styles.searchField}>

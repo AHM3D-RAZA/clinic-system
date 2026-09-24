@@ -18,6 +18,15 @@
   color: var(--color-primary-deep);
 }
 
+.mark {
+  font-family: var(--font-mark);
+  font-size: 1.3rem;
+  color: var(--color-secondary-deep);
+  transform: rotate(-2deg);
+  display: block;
+  margin-bottom: 0.2em;
+}
+
 .name {
   font-size: clamp(1.7rem, 3.2vw, 2.4rem);
   color: var(--color-ink);

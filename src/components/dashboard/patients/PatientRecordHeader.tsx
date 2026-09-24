@@ -23,6 +23,7 @@ export function PatientRecordHeader({ patient, doctorName, doctorSwatch }: Patie
         ← Back to the register
       </Link>
 
+      <span className={styles.mark}>the record</span>
       <h1 className={styles.name}>{patient.fullName}</h1>
       <p className={styles.contact}>
         {patient.email} · {formatPhoneReadable(patient.phone)}

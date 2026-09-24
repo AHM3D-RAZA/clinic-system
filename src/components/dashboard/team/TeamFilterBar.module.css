@@ -74,6 +74,34 @@
     align-items: stretch;
   }
 
+  .tabsWrap {
+    position: relative;
+  }
+
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .tab {
+    flex-shrink: 0;
+  }
+
+  /* Same technique as the appointment day strip: a plain-text tab row
+     that no longer fits on one line should read as "scroll for more",
+     not as if the last tab got cut off. */
+  .tabsWrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 2px;
+    width: 24px;
+    background: linear-gradient(to right, transparent, var(--color-paper));
+    pointer-events: none;
+  }
+
   .searchField {
     justify-content: space-between;
   }
