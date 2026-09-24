@@ -18,7 +18,7 @@ export default async function HomePage() {
       <Hero eyebrow={content.clinic.eyebrow} copy={content.heroCopy} />
       <MarqueeStrip items={content.marqueeItems} />
       <IntroSection
-        headline="We built the studio we'd want to visit."
+        headline={content.introHeadline}
         copy={content.introCopy}
         stats={content.stats}
       />

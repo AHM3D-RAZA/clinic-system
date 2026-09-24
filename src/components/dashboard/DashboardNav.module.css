@@ -36,6 +36,13 @@
   background: var(--color-secondary);
   flex-shrink: 0;
 }
+.markImage {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
 
 .list {
   display: flex;

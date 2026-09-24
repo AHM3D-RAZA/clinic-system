@@ -44,11 +44,17 @@ export function BookingExperience({ clinic, services }: BookingExperienceProps) 
             booking={booking}
             service={bookedService}
             clinicPhone={clinic.contact.phone}
+            clinicShortName={clinic.shortName}
             onStartOver={() => setBooking(null)}
           />
         ) : (
           <Suspense fallback={<div className={styles.formSkeleton} aria-hidden="true" />}>
-            <BookingForm clinicId={clinic.id} services={services} onSuccess={setBooking} />
+            <BookingForm
+              clinicId={clinic.id}
+              clinicShortName={clinic.shortName}
+              services={services}
+              onSuccess={setBooking}
+            />
           </Suspense>
         )}
       </div>

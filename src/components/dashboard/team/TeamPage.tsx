@@ -10,6 +10,7 @@ import { TeamEmptyState } from "./TeamEmptyState";
 
 interface TeamPageProps {
   members: TeamMember[];
+  clinicShortName: string;
 }
 
 /**
@@ -19,7 +20,7 @@ interface TeamPageProps {
  * actual grouping/filtering/context logic lives in lib/team.ts so this
  * stays a thin wiring layer, matching how DashboardOverview is structured.
  */
-export function TeamPage({ members }: TeamPageProps) {
+export function TeamPage({ members, clinicShortName }: TeamPageProps) {
   const [groupFilter, setGroupFilter] = useState<TeamGroupKey | "all">("all");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export function TeamPage({ members }: TeamPageProps) {
 
   return (
     <div>
-      <TeamMasthead contextLine={contextLine} />
+      <TeamMasthead contextLine={contextLine} clinicShortName={clinicShortName} />
 
       <TeamFilterBar
         activeGroup={groupFilter}

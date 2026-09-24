@@ -2,6 +2,7 @@ import styles from "./TeamMasthead.module.css";
 
 interface TeamMasteheadProps {
   contextLine: string;
+  clinicShortName: string;
 }
 
 /**
@@ -11,11 +12,11 @@ interface TeamMasteheadProps {
  * not a row of stat tiles, on purpose (see project brief: "unnecessary
  * statistics").
  */
-export function TeamMasthead({ contextLine }: TeamMasteheadProps) {
+export function TeamMasthead({ contextLine, clinicShortName }: TeamMasteheadProps) {
   return (
     <div className={styles.masthead}>
       <span className={styles.mark}>the people</span>
-      <h1 className={styles.headline}>Everyone behind Aster.</h1>
+      <h1 className={styles.headline}>Everyone behind {clinicShortName}.</h1>
       <p className={styles.context}>{contextLine}</p>
     </div>
   );

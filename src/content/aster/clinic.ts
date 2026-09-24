@@ -56,4 +56,7 @@ export const asterClinicConfig: ClinicConfig = {
     feeMode: "free",
     automationMode: "manual",
   },
+  // No brandMark set — Aster uses the default text + colored-dot mark.
+  // A future clinic with a real logo would add:
+  //   brandMark: { type: "image", src: "https://...", alt: "Clinic name" },
 };
