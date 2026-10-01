@@ -1,14 +1,35 @@
 .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
   padding: 16px 0;
   border-bottom: 1px solid var(--color-line);
 }
 
 .row:last-child {
   border-bottom: none;
+}
+
+.trigger,
+.staticRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.trigger {
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 .dot {
@@ -102,8 +123,36 @@
   opacity: 0.8;
 }
 
+.metaDivider {
+  opacity: 0.6;
+  margin: 0 4px;
+}
+
+.detailsHint {
+  opacity: 1;
+  text-decoration: underline;
+  text-decoration-color: var(--color-line);
+  text-underline-offset: 2px;
+  font-weight: 600;
+}
+.trigger:hover .detailsHint,
+.trigger:focus-visible .detailsHint {
+  color: var(--color-primary-deep);
+  text-decoration-color: var(--color-primary);
+}
+
+.detailWrap {
+  margin-top: 4px;
+}
+
 @media (max-width: 640px) {
   .row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .trigger,
+  .staticRow {
     flex-direction: column;
     gap: 8px;
   }

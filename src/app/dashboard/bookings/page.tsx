@@ -23,6 +23,7 @@ export default async function BookingsPage() {
       bookings={bookings}
       serviceNameById={buildServiceNameLookup(services)}
       doctorNameById={buildDoctorNameLookup(doctors)}
+      doctors={doctors}
       todayIso={todayIsoDate(now)}
       nowIso={now.toISOString()}
     />

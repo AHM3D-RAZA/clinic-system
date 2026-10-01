@@ -1,13 +1,11 @@
 import type { Appointment } from "@/types/appointment";
 
 /**
- * A stand-in for a real appointments table. Deliberately separate from
- * `data/mockDb.ts` (the booking-request store): appointments are a
- * different domain concept (see `types/appointment.ts`) and this phase
- * only needs to *read* a realistic spread of them, not persist writes.
- * Swapping this for a real backend later means replacing this file and
- * `services/appointmentService.ts` — nothing above the service layer
- * needs to change.
+ * Seed data for `data/appointmentsTable.ts` (the file-backed store) —
+ * loaded once, on that store's first initialization, exactly like
+ * `mockDb.ts`'s `SEED_BOOKING_REQUESTS`. This array itself is never
+ * read anywhere else at runtime; it exists so the demo starts with a
+ * realistic spread of appointments instead of an empty schedule.
  */
 
 /** `n` days from today, as `yyyy-mm-dd`. Negative `n` is in the past. */

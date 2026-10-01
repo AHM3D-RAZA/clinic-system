@@ -307,6 +307,27 @@ export const bookingRequestsTable = {
     return updated;
   },
   /**
+   * Sets status to "confirmed" and assigns a doctor in a single write —
+   * the two fields change together as one step of the booking→
+   * appointment workflow, so this does one `saveToDisk` rather than two
+   * separate updates that could disagree if a write failed in between.
+   */
+  confirmWithDoctor(id: string, doctorId: string): BookingRequest | undefined {
+    const current = getStore();
+    const existing = current.find((b) => b.id === id);
+    if (!existing) return undefined;
+    const updated: BookingRequest = {
+      ...existing,
+      status: "confirmed",
+      assignedDoctorId: doctorId,
+      updatedAt: new Date().toISOString(),
+    };
+    const next = current.map((b) => (b.id === id ? updated : b));
+    saveToDisk(next);
+    setStore(next);
+    return updated;
+  },
+  /**
    * Test-only: restores the table to its seeded state, in memory AND
    * on disk. Never called by application code — only by test setup, so
    * each test starts from a known baseline instead of leaking state

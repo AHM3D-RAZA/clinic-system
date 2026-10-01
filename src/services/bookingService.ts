@@ -41,4 +41,9 @@ async function updateStatus(
   return bookingRequestsTable.updateStatus(id, status);
 }
 
-export const bookingService = { create, getById, listByClinic, updateStatus };
+/** Sets status to "confirmed" and assigns a doctor in one step — see `mockDb.ts#confirmWithDoctor`. */
+async function confirmWithDoctor(id: string, doctorId: string): Promise<BookingRequest | undefined> {
+  return bookingRequestsTable.confirmWithDoctor(id, doctorId);
+}
+
+export const bookingService = { create, getById, listByClinic, updateStatus, confirmWithDoctor };

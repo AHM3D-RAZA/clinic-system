@@ -1,10 +1,10 @@
 /**
  * Lifecycle of a booking request. A submitted form is ALWAYS "pending" —
  * it only becomes "confirmed" once a human (or, later, automation)
- * assigns a time and doctor. See the project brief: a booking request
- * and an appointment are conceptually different things, and we keep
- * that distinction even though the MVP doesn't yet build the step that
- * turns one into the other.
+ * assigns a time and doctor. A booking request and an appointment
+ * remain conceptually different things (see `types/appointment.ts`),
+ * but confirming a booking (see `lib/deriveAppointment.ts`) is the
+ * step that turns one into the other.
  */
 export type BookingStatus =
   | "pending"

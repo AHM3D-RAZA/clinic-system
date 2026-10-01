@@ -28,4 +28,13 @@ export interface Appointment {
   status: BookingStatus;
   /** Optional operational context surfaced in the detail view (allergy flags, patient requests, prep notes). */
   notes?: string;
+  /**
+   * The `BookingRequest.id` this appointment was derived from, when it
+   * was created by confirming a booking request (see
+   * `lib/deriveAppointment.ts`). Optional because most seeded
+   * appointments don't originate from a booking request at all — this
+   * is provenance, not a required relationship, and deliberately not a
+   * general foreign key the rest of the app is expected to join on.
+   */
+  sourceBookingId?: string;
 }
