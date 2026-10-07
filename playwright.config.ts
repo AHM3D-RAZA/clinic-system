@@ -1,4 +1,18 @@
+import { randomBytes } from "node:crypto";
 import { defineConfig, devices } from "@playwright/test";
+import { hashPassword } from "./src/lib/auth/passwordHash";
+
+// Test-only staff login: a fresh random password each run, hashed for the
+// app server. Workers inherit E2E_STAFF_PASSWORD from this process.
+process.env.E2E_STAFF_PASSWORD ??= randomBytes(12).toString("base64url");
+const e2eStaffAccounts = JSON.stringify([
+  {
+    email: "e2e.staff@clinic.test",
+    name: "Esme Tester",
+    title: "Front desk",
+    passwordHash: hashPassword(process.env.E2E_STAFF_PASSWORD),
+  },
+]);
 
 /**
  * E2E/smoke tests run against a real `next build` + `next start` server
@@ -31,6 +45,7 @@ export default defineConfig({
     command: "npm run build && npm run start -- -p 3100",
     url: "http://localhost:3100",
     reuseExistingServer: !process.env.CI,
+    env: { AUTH_SECRET: randomBytes(32).toString("base64url"), STAFF_ACCOUNTS: e2eStaffAccounts },
     timeout: 120_000,
   },
 });

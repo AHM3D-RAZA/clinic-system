@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { clinicService } from "@/services/clinicService";
 import { DEFAULT_CLINIC_ID } from "@/config/clinics";
+import { requireStaff } from "@/lib/auth/currentStaff";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,6 +14,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
+  const staff = await requireStaff();
   const { clinic } = await clinicService.getClinicContent(DEFAULT_CLINIC_ID);
-  return <DashboardShell clinic={clinic}>{children}</DashboardShell>;
+  return (
+    <DashboardShell clinic={clinic} staff={staff}>
+      {children}
+    </DashboardShell>
+  );
 }

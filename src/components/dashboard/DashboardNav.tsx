@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ClinicConfig } from "@/types/clinic";
+import type { StaffIdentity } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { useDismissablePanel } from "@/lib/useDismissablePanel";
 import { DASHBOARD_NAV_ITEMS } from "./navItems";
@@ -13,6 +14,7 @@ import styles from "./DashboardNav.module.css";
 
 interface DashboardNavProps {
   clinic: ClinicConfig;
+  staff: StaffIdentity;
 }
 
 /**
@@ -22,7 +24,7 @@ interface DashboardNavProps {
  * dismissable drawer — the same escape/focus behavior the public
  * site's mobile nav already uses, via the shared hook.
  */
-export function DashboardNav({ clinic }: DashboardNavProps) {
+export function DashboardNav({ clinic, staff }: DashboardNavProps) {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const drawerCloseRef = useRef<HTMLButtonElement | null>(null);
@@ -51,7 +53,7 @@ export function DashboardNav({ clinic }: DashboardNavProps) {
       <nav className={styles.rail} aria-label="Dashboard navigation">
         {brand}
         <DashboardNavList items={DASHBOARD_NAV_ITEMS} currentPath={pathname} />
-        <DashboardStaffBadge clinicShortName={clinic.shortName} />
+        <DashboardStaffBadge clinicShortName={clinic.shortName} staff={staff} />
       </nav>
 
       {/* Mobile top bar */}
@@ -95,7 +97,7 @@ export function DashboardNav({ clinic }: DashboardNavProps) {
           onNavigate={() => setIsDrawerOpen(false)}
           tabbable={isDrawerOpen}
         />
-        <DashboardStaffBadge clinicShortName={clinic.shortName} />
+        <DashboardStaffBadge clinicShortName={clinic.shortName} staff={staff} tabbable={isDrawerOpen} />
       </div>
     </>
   );

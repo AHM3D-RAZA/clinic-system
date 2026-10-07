@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { confirmBooking } from "@/services/confirmationService";
+import { requireStaffApi } from "@/lib/auth/apiGuard";
 
 /**
  * POST /api/bookings/:id/confirm
@@ -10,9 +11,12 @@ import { confirmBooking } from "@/services/confirmationService";
  * "confirm with this doctor." All the actual validation and the
  * appointment-creation-then-booking-update sequencing lives in
  * `services/confirmationService.ts`; this handler only translates its
- * result into HTTP.
+ * result into HTTP. Staff-only: 401 when no staff session is present.
  */
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await requireStaffApi();
+  if (denied) return denied;
+
   const { id } = await params;
 
   let body: { doctorId?: unknown };
