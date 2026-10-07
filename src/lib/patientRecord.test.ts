@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { findPatientAppointments, findPatientBookingRequests, splitPatientSchedule } from "./patientRecord";
+import {
+  findPatientAppointments,
+  findPatientBookingRequests,
+  splitPatientSchedule,
+  withDerivedSchedule,
+} from "./patientRecord";
 import type { Patient } from "@/types/patient";
 import type { Appointment } from "@/types/appointment";
 import type { BookingRequest } from "@/types/booking";
@@ -22,6 +27,7 @@ function appointment(overrides: Partial<Appointment> = {}): Appointment {
   return {
     id: "apt_1",
     clinicId: "aster",
+    patientId: "pat_1",
     patientName: "Maya Chen",
     patientType: "existing",
     doctorId: "nadia-farooqi",
@@ -50,25 +56,30 @@ function booking(overrides: Partial<BookingRequest> = {}): BookingRequest {
 }
 
 describe("findPatientAppointments", () => {
-  it("matches by name, case-insensitively", () => {
-    const appointments = [appointment({ patientName: "MAYA CHEN" }), appointment({ id: "apt_2", patientName: "Owen Bricks" })];
+  it("joins on patientId", () => {
+    const appointments = [appointment(), appointment({ id: "apt_2", patientId: "pat_2" })];
     expect(findPatientAppointments(appointments, patient()).map((a) => a.id)).toEqual(["apt_1"]);
   });
 
-  it("returns nothing for a patient with no matching appointments", () => {
-    const appointments = [appointment({ patientName: "Someone Else" })];
+  it("does not match on name — a same-named different patient is a different patient", () => {
+    const appointments = [appointment({ patientId: "pat_other", patientName: "Maya Chen" })];
     expect(findPatientAppointments(appointments, patient())).toHaveLength(0);
+  });
+
+  it("still finds the appointment if the stored name snapshot differs", () => {
+    const appointments = [appointment({ patientName: "M. Chen" })];
+    expect(findPatientAppointments(appointments, patient())).toHaveLength(1);
   });
 });
 
 describe("findPatientBookingRequests", () => {
-  it("matches by email, case-insensitively", () => {
-    const bookings = [booking({ patient: { ...booking().patient, email: "MAYA.CHEN@example.com" } })];
+  it("joins on patientId", () => {
+    const bookings = [booking({ patientId: "pat_1" }), booking({ id: "bkg_2", patientId: "pat_2" })];
     expect(findPatientBookingRequests(bookings, patient()).map((b) => b.id)).toEqual(["bkg_1"]);
   });
 
-  it("returns nothing when no booking shares the patient's email", () => {
-    const bookings = [booking({ patient: { ...booking().patient, email: "someone.else@example.com" } })];
+  it("does not match on email, and ignores requests with no patientId yet", () => {
+    const bookings = [booking({ patientId: undefined })];
     expect(findPatientBookingRequests(bookings, patient())).toHaveLength(0);
   });
 });
@@ -95,5 +106,55 @@ describe("splitPatientSchedule", () => {
     ];
     const { recent } = splitPatientSchedule(appointments, today, 2);
     expect(recent.map((a) => a.id)).toEqual(["b", "c"]);
+  });
+});
+
+describe("withDerivedSchedule", () => {
+  const today = "2026-06-15";
+
+  it("derives nextAppointment from the earliest upcoming pending/confirmed appointment", () => {
+    const appointments = [
+      appointment({ id: "later", date: "2026-06-20" }),
+      appointment({ id: "soon", date: "2026-06-16", time: "10:00", serviceId: "root-canal" }),
+      appointment({ id: "cancelled", date: "2026-06-15", status: "cancelled" }),
+      appointment({ id: "past", date: "2026-06-01" }),
+    ];
+    const result = withDerivedSchedule(patient(), appointments, today);
+    expect(result.nextAppointment).toEqual({
+      appointmentId: "soon",
+      dateIso: "2026-06-16",
+      time: "10:00",
+      serviceId: "root-canal",
+    });
+  });
+
+  it("has no nextAppointment without a real upcoming appointment, whatever was stored", () => {
+    const stale = patient({
+      nextAppointment: { appointmentId: "ghost", dateIso: "2026-07-01", time: "09:00", serviceId: "root-canal" },
+    });
+    expect(withDerivedSchedule(stale, [], today).nextAppointment).toBeUndefined();
+  });
+
+  it("ignores other patients' appointments", () => {
+    const appointments = [appointment({ patientId: "pat_other", date: "2026-06-16" })];
+    expect(withDerivedSchedule(patient(), appointments, today).nextAppointment).toBeUndefined();
+  });
+
+  it("moves lastVisit forward to a more recent completed appointment", () => {
+    const appointments = [appointment({ status: "completed", date: "2026-06-14" })];
+    const result = withDerivedSchedule(patient({ lastVisit: "2025-08-01" }), appointments, today);
+    expect(result.lastVisit).toBe("2026-06-14");
+  });
+
+  it("never moves lastVisit backwards", () => {
+    const appointments = [appointment({ status: "completed", date: "2024-01-01" })];
+    const result = withDerivedSchedule(patient({ lastVisit: "2026-06-01" }), appointments, today);
+    expect(result.lastVisit).toBe("2026-06-01");
+  });
+
+  it("does not mutate the stored patient", () => {
+    const stored = patient();
+    withDerivedSchedule(stored, [appointment({ date: "2026-06-16" })], today);
+    expect(stored.nextAppointment).toBeUndefined();
   });
 });

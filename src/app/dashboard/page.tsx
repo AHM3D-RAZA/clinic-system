@@ -1,5 +1,6 @@
 import { clinicService } from "@/services/clinicService";
 import { bookingService } from "@/services/bookingService";
+import { appointmentService } from "@/services/appointmentService";
 import { DEFAULT_CLINIC_ID } from "@/config/clinics";
 
 /**
@@ -20,21 +21,21 @@ import { formatDateForDisplay } from "@/lib/utils";
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 
 /**
- * Reads booking data through the same `bookingService` the public
- * booking flow writes through — this is the real persisted table
- * (`.data/bookings.json`), not a second/duplicated data source. When
- * the patient/booking modules land, they'll read through this same
- * service.
+ * Reads booking requests through `bookingService` and today's
+ * schedule through `appointmentService` — the same two services the
+ * Bookings and Appointments screens read — so the daybook's "today"
+ * is the Appointments screen's today.
  */
 export default async function DashboardOverviewPage() {
-  const [{ clinic, services, doctors }, bookings] = await Promise.all([
+  const [{ clinic, services, doctors }, bookings, appointments] = await Promise.all([
     clinicService.getClinicContent(DEFAULT_CLINIC_ID),
     bookingService.listByClinic(DEFAULT_CLINIC_ID),
+    appointmentService.listByClinic(DEFAULT_CLINIC_ID),
   ]);
 
   const now = new Date();
   const todayIso = todayIsoDate(now);
-  const summary = buildOverviewSummary(bookings, todayIso);
+  const summary = buildOverviewSummary(bookings, appointments, todayIso);
   const serviceNameById = buildServiceNameLookup(services);
   const doctorNameById = buildDoctorNameLookup(doctors);
 

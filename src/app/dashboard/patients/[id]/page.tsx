@@ -6,7 +6,7 @@ import { bookingService } from "@/services/bookingService";
 import { DEFAULT_CLINIC_ID } from "@/config/clinics";
 import { buildDoctorNameLookup, buildServiceNameLookup } from "@/lib/dashboardOverview";
 import { buildDoctorSwatchLookup } from "@/lib/patientDirectory";
-import { findPatientAppointments, findPatientBookingRequests } from "@/lib/patientRecord";
+import { findPatientAppointments, findPatientBookingRequests, withDerivedSchedule } from "@/lib/patientRecord";
 import { todayIsoDate } from "@/lib/appointments";
 import { PatientRecordWorkspace } from "@/components/dashboard/patients/PatientRecordWorkspace";
 
@@ -28,18 +28,19 @@ export default async function PatientRecordPage({ params }: PatientRecordPagePro
 
   if (!patient) notFound();
 
+  const todayIso = todayIsoDate();
   const doctorNameById = buildDoctorNameLookup(doctors);
   const doctorSwatchById = buildDoctorSwatchLookup(doctors);
 
   return (
     <PatientRecordWorkspace
-      patient={patient}
+      patient={withDerivedSchedule(patient, appointments, todayIso)}
       doctorName={doctorNameById[patient.primaryDoctorId] ?? "Unassigned"}
       doctorSwatch={doctorSwatchById[patient.primaryDoctorId] ?? "ink"}
       appointments={findPatientAppointments(appointments, patient)}
       bookings={findPatientBookingRequests(bookings, patient)}
       serviceNameById={buildServiceNameLookup(services)}
-      todayIso={todayIsoDate()}
+      todayIso={todayIso}
     />
   );
 }

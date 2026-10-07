@@ -6,6 +6,7 @@ import type { Appointment } from "@/types/appointment";
 const SAMPLE_APPOINTMENT: Appointment = {
   id: "apt_service_test",
   clinicId: "aster",
+  patientId: "pat_test",
   patientName: "Priya Nair",
   patientType: "new",
   doctorId: "nadia-farooqi",

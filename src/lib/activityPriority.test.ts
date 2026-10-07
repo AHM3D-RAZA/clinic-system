@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { prioritizeToday, prioritizeWaiting } from "./activityPriority";
+import { prioritizeWaiting } from "./activityPriority";
 import type { BookingRequest } from "@/types/booking";
 
 function booking(overrides: Partial<BookingRequest>): BookingRequest {
@@ -31,23 +31,6 @@ describe("prioritizeWaiting", () => {
     const newer = booking({ id: "newer", createdAt: "2026-05-30T00:00:00.000Z" });
     const older = booking({ id: "older", createdAt: "2026-05-01T00:00:00.000Z" });
     const result = prioritizeWaiting([newer, older], todayIso);
-    expect(result.map((b) => b.id)).toEqual(["older", "newer"]);
-  });
-});
-
-describe("prioritizeToday", () => {
-  it("orders morning, then afternoon, then evening", () => {
-    const evening = booking({ id: "evening", preferredTime: "evening" });
-    const morning = booking({ id: "morning", preferredTime: "morning" });
-    const afternoon = booking({ id: "afternoon", preferredTime: "afternoon" });
-    const result = prioritizeToday([evening, morning, afternoon]);
-    expect(result.map((b) => b.id)).toEqual(["morning", "afternoon", "evening"]);
-  });
-
-  it("breaks ties within the same time slot by oldest-created first", () => {
-    const newer = booking({ id: "newer", preferredTime: "morning", createdAt: "2026-05-30T00:00:00.000Z" });
-    const older = booking({ id: "older", preferredTime: "morning", createdAt: "2026-05-01T00:00:00.000Z" });
-    const result = prioritizeToday([newer, older]);
     expect(result.map((b) => b.id)).toEqual(["older", "newer"]);
   });
 });

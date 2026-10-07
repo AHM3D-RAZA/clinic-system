@@ -6,6 +6,7 @@ function makeAppointment(overrides: Partial<Appointment> = {}): Appointment {
   return {
     id: `apt_${Math.random().toString(36).slice(2, 10)}`,
     clinicId: "aster",
+    patientId: "pat_test",
     patientName: "Persistence Test Patient",
     patientType: "new",
     doctorId: "nadia-farooqi",

@@ -41,6 +41,15 @@ export interface CreateBookingInput {
  */
 export interface BookingRequest extends CreateBookingInput {
   id: string;
+  /**
+   * The canonical `Patient.id` this request belongs to. Optional: a
+   * request submitted through the public form carries no patient
+   * identity until it's confirmed (see `services/confirmationService.ts`,
+   * which resolves or creates the patient and records the id here), and
+   * a request that never converts (e.g. cancelled) may never get one.
+   * `patient` below stays as the snapshot of what the form collected.
+   */
+  patientId?: string;
   status: BookingStatus;
   assignedDoctorId?: string;
   createdAt: string; // ISO datetime

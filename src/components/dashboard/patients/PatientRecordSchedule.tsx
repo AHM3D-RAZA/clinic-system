@@ -2,7 +2,7 @@ import type { Patient } from "@/types/patient";
 import type { Appointment } from "@/types/appointment";
 import { formatDateForDisplay } from "@/lib/utils";
 import { formatTimeLabel, statusLabel } from "@/lib/appointments";
-import { describeLastVisit, SHORT_TIME_LABEL } from "@/lib/patientDirectory";
+import { describeLastVisit } from "@/lib/patientDirectory";
 import { splitPatientSchedule } from "@/lib/patientRecord";
 import styles from "./PatientRecordSchedule.module.css";
 
@@ -41,12 +41,6 @@ export function PatientRecordSchedule({ patient, appointments, serviceNameById, 
               </li>
             ))}
           </ul>
-        ) : patient.nextAppointment ? (
-          <p className={styles.fallback}>
-            {formatDateForDisplay(patient.nextAppointment.dateIso)} ·{" "}
-            {SHORT_TIME_LABEL[patient.nextAppointment.time]} ·{" "}
-            {serviceNameById[patient.nextAppointment.serviceId] ?? "Service"}
-          </p>
         ) : (
           <p className={styles.fallback}>Nothing scheduled.</p>
         )}

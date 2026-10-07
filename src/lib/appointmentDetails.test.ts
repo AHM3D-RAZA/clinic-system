@@ -6,6 +6,7 @@ function appointment(overrides: Partial<Appointment>): Appointment {
   return {
     id: "apt_1",
     clinicId: "aster",
+    patientId: "pat_test",
     patientName: "Pat Patient",
     patientType: "new",
     doctorId: "nadia-farooqi",

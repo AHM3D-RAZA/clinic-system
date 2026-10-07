@@ -1,12 +1,14 @@
 import type { TeamMember } from "@/types/team";
+import { DOCTOR } from "./seedGraph";
 
 /**
  * Aster's current roster. A clean, standalone mock data layer — not a
  * reuse of the public-site `Doctor` type in src/content/aster/content.ts,
  * because that type only carries marketing copy (a bio for the website)
  * and has no notion of availability, responsibility, or contact info.
- * The three doctors here share ids/names with that file on purpose, so
- * the two stay recognizably "the same people".
+ * The three doctors here take their ids/names from the canonical seed
+ * graph (`seedGraph.ts`), which the public-site content matches, so the
+ * two stay "the same people".
  *
  * Swapping this for a real backend later is a matter of replacing this
  * file's export with a fetch — nothing that imports `teamService`
@@ -14,8 +16,8 @@ import type { TeamMember } from "@/types/team";
  */
 export const asterTeam: TeamMember[] = [
   {
-    id: "nadia-farooqi",
-    name: "Dr. Nadia Farooqi",
+    id: DOCTOR.nadia.id,
+    name: DOCTOR.nadia.name,
     initials: "NF",
     group: "doctors",
     role: "Founder · General & Cosmetic",
@@ -24,8 +26,8 @@ export const asterTeam: TeamMember[] = [
     swatch: "primary",
   },
   {
-    id: "rehan-khalid",
-    name: "Dr. Rehan Khalid",
+    id: DOCTOR.rehan.id,
+    name: DOCTOR.rehan.name,
     initials: "RK",
     group: "doctors",
     role: "Endodontics",
@@ -35,8 +37,8 @@ export const asterTeam: TeamMember[] = [
     swatch: "secondary",
   },
   {
-    id: "sana-malik",
-    name: "Dr. Sana Malik",
+    id: DOCTOR.sana.id,
+    name: DOCTOR.sana.name,
     initials: "SM",
     group: "doctors",
     role: "Pediatric Care",

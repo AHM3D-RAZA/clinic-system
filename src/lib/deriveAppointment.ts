@@ -29,19 +29,26 @@ const DEFAULT_DURATION_MINUTES = 30;
 
 /**
  * Converts a booking request into a complete `Appointment`, once a
- * doctor has been chosen for it. Pure — no persistence, no id lookups
- * beyond generating a new one, no clinic/doctor validation (that's the
- * caller's job, see `services/confirmationService.ts`). Given the same
- * inputs, always produces the same shape.
+ * doctor has been chosen for it and the patient has been resolved.
+ * Pure — no persistence, no id lookups beyond generating a new one, no
+ * patient/clinic/doctor validation (that's the caller's job, see
+ * `services/confirmationService.ts`). Given the same inputs, always
+ * produces the same shape.
  *
  * `time` lets a caller override the derived-from-preferredTime default
  * (e.g. a future UI that lets staff pick an exact slot); omitted, it
  * falls back to `DEFAULT_TIME_BY_SLOT[booking.preferredTime]`.
  */
-export function deriveAppointmentFromBooking(booking: BookingRequest, doctorId: string, time?: string): Appointment {
+export function deriveAppointmentFromBooking(
+  booking: BookingRequest,
+  doctorId: string,
+  patientId: string,
+  time?: string,
+): Appointment {
   return {
     id: generateId("apt"),
     clinicId: booking.clinicId,
+    patientId,
     patientName: booking.patient.fullName,
     patientType: booking.patient.patientType,
     doctorId,

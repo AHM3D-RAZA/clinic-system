@@ -22,6 +22,7 @@ export const asterClinicConfig: ClinicConfig = {
     address: "412 Elm Street, Suite B",
     hours: "Tue–Sat, 9am–6pm",
   },
+  operatingHours: { openDays: [2, 3, 4, 5, 6], opensAt: "09:00", closesAt: "18:00" },
   theme: {
     colors: {
       cream: "#FBEEDD",

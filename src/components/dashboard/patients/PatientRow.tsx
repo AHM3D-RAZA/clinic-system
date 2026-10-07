@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Patient } from "@/types/patient";
 import type { SwatchKey } from "@/types/content";
 import { formatDateForDisplay, formatPhoneReadable } from "@/lib/utils";
-import { describeLastVisit, SHORT_TIME_LABEL } from "@/lib/patientDirectory";
+import { formatTimeLabel } from "@/lib/appointments";
+import { describeLastVisit } from "@/lib/patientDirectory";
 import { swatchToCssVar } from "@/lib/theme";
 import styles from "./PatientRow.module.css";
 
@@ -44,7 +45,7 @@ export function PatientRow({ patient, doctorName, doctorSwatch, todayIso }: Pati
           {patient.nextAppointment ? (
             <p className={styles.schedule}>
               Next: {formatDateForDisplay(patient.nextAppointment.dateIso)} ·{" "}
-              {SHORT_TIME_LABEL[patient.nextAppointment.time]}
+              {formatTimeLabel(patient.nextAppointment.time)}
             </p>
           ) : (
             <p className={styles.schedule}>{describeLastVisit(patient.lastVisit, todayIso)}</p>

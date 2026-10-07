@@ -1,4 +1,4 @@
-import type { PatientType, PreferredTimeSlot } from "./booking";
+import type { PatientType } from "./booking";
 
 /**
  * The dashboard's patient record. Deliberately its own type, not the
@@ -21,6 +21,11 @@ export interface Patient {
   patientSince: string;
   /** ISO date of their most recent visit. Absent = never been seen yet. */
   lastVisit?: string;
+  /**
+   * Derived at read time from real appointments (see
+   * `lib/patientRecord.ts#withDerivedSchedule`) — never stored, so it
+   * cannot disagree with the appointment schedule.
+   */
   nextAppointment?: PatientAppointmentPreview;
   /**
    * A short, front-desk-relevant reason this patient needs attention —
@@ -31,7 +36,9 @@ export interface Patient {
 }
 
 export interface PatientAppointmentPreview {
+  appointmentId: string;
   dateIso: string;
-  time: PreferredTimeSlot;
+  /** 24-hour clock, HH:mm — the appointment's real time. */
+  time: string;
   serviceId: string;
 }

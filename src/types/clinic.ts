@@ -42,7 +42,20 @@ export interface ClinicContact {
   phone: string;
   email: string;
   address: string;
+  /** Human-readable display string. The structured form lives in `ClinicConfig.operatingHours`. */
   hours: string;
+}
+
+/**
+ * Structured opening hours, in preparation for scheduling. Nothing
+ * enforces these yet — `ClinicContact.hours` remains what's displayed.
+ */
+export interface ClinicOperatingHours {
+  /** Days the clinic is open, 0 = Sunday … 6 = Saturday. */
+  openDays: number[];
+  /** 24-hour clock, HH:mm. */
+  opensAt: string;
+  closesAt: string;
 }
 
 /**
@@ -77,6 +90,7 @@ export interface ClinicConfig {
   eyebrow: string;
   description: string;
   contact: ClinicContact;
+  operatingHours: ClinicOperatingHours;
   theme: ClinicThemeTokens;
   bookingSettings: ClinicBookingSettings;
   /** Omit for the existing text/dot mark — see ClinicBrandMark. */

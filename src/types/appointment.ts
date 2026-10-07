@@ -16,6 +16,9 @@ import type { BookingStatus, PatientType } from "./booking";
 export interface Appointment {
   id: string;
   clinicId: string;
+  /** The canonical `Patient.id` — the join key for everything patient-related. */
+  patientId: string;
+  /** Snapshot of the patient's name at booking time, kept for display. Not a join key. */
   patientName: string;
   patientType: PatientType;
   doctorId: string;
@@ -33,8 +36,9 @@ export interface Appointment {
    * was created by confirming a booking request (see
    * `lib/deriveAppointment.ts`). Optional because most seeded
    * appointments don't originate from a booking request at all — this
-   * is provenance, not a required relationship, and deliberately not a
-   * general foreign key the rest of the app is expected to join on.
+   * is provenance, not a required relationship. (`patientId` above is
+   * the join key for patients; this is only "which request produced
+   * me".)
    */
   sourceBookingId?: string;
 }

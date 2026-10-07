@@ -1,6 +1,7 @@
 import type { BookingRequest } from "@/types/booking";
 import type { DashboardOverviewSummary } from "@/types/dashboard";
-import { prioritizeToday, prioritizeWaiting } from "./activityPriority";
+import type { Appointment } from "@/types/appointment";
+import { prioritizeWaiting } from "./activityPriority";
 
 export type ActivityChapterKey = "waiting" | "today" | "recent";
 
@@ -14,6 +15,7 @@ export type ActivityChapterKey = "waiting" | "today" | "recent";
 export type ActivityStreamNode =
   | { type: "chapterLabel"; key: ActivityChapterKey; label: string; note: string }
   | { type: "entry"; key: string; booking: BookingRequest }
+  | { type: "appointmentEntry"; key: string; appointment: Appointment }
   | { type: "emptyNote"; key: string; message: string }
   | { type: "toggle"; key: string; chapterKey: ActivityChapterKey; expanded: boolean; label: string }
   | { type: "overflowNote"; key: string; message: string };
@@ -61,9 +63,9 @@ const CHAPTER_LIMITS: Record<ActivityChapterKey, { initial: number; expanded: nu
 };
 
 /**
- * Groups bookings into the three chapters, removes duplicates across them
- * (a pending request for today surfaces once, under the more urgent
- * "Waiting on you" chapter), applies each chapter's ordering rule, and
+ * Groups bookings and today's appointments into the three chapters,
+ * removes duplicates across them (a request that is already one of
+ * today's appointments isn't repeated under "Recently in"), applies each chapter's ordering rule, and
  * curates how much of each chapter is actually rendered based on which
  * chapters the caller says are expanded. All curation/ordering logic
  * lives here — components just render whatever nodes come back.
@@ -76,15 +78,18 @@ export function buildActivityStreamNodes(
   const waiting = prioritizeWaiting(summary.pending, todayIso);
   const waitingIds = new Set(waiting.map((b) => b.id));
 
-  const today = prioritizeToday(summary.today.filter((b) => !waitingIds.has(b.id)));
-  const todayIds = new Set(today.map((b) => b.id));
+  // "Today" is the real schedule (appointments), already in time order.
+  const today = summary.today;
+  // A request that became one of today's appointments is already shown
+  // there — don't tell the same story twice under "Recently in".
+  const scheduledTodayFrom = new Set(today.map((a) => a.sourceBookingId).filter((id): id is string => !!id));
 
-  const recent = summary.recent.filter((b) => !waitingIds.has(b.id) && !todayIds.has(b.id));
+  const recent = summary.recent.filter((b) => !waitingIds.has(b.id) && !scheduledTodayFrom.has(b.id));
 
-  const chapters: Array<{ key: ActivityChapterKey; bookings: BookingRequest[] }> = [
-    { key: "waiting", bookings: waiting },
-    { key: "today", bookings: today },
-    { key: "recent", bookings: recent },
+  const chapters: Array<{ key: ActivityChapterKey; items: Array<BookingRequest | Appointment> }> = [
+    { key: "waiting", items: waiting },
+    { key: "today", items: today },
+    { key: "recent", items: recent },
   ];
 
   const nodes: ActivityStreamNode[] = [];
@@ -92,7 +97,7 @@ export function buildActivityStreamNodes(
   for (const chapter of chapters) {
     const copy = CHAPTER_COPY[chapter.key];
     const limits = CHAPTER_LIMITS[chapter.key];
-    const total = chapter.bookings.length;
+    const total = chapter.items.length;
     const isExpanded = expandedChapters.has(chapter.key);
 
     nodes.push({ type: "chapterLabel", key: chapter.key, label: copy.label, note: copy.note });
@@ -103,8 +108,12 @@ export function buildActivityStreamNodes(
     }
 
     const visibleCount = Math.min(total, isExpanded ? limits.expanded : limits.initial);
-    for (const booking of chapter.bookings.slice(0, visibleCount)) {
-      nodes.push({ type: "entry", key: booking.id, booking });
+    for (const item of chapter.items.slice(0, visibleCount)) {
+      nodes.push(
+        chapter.key === "today"
+          ? { type: "appointmentEntry", key: item.id, appointment: item as Appointment }
+          : { type: "entry", key: item.id, booking: item as BookingRequest },
+      );
     }
 
     if (!isExpanded && total > limits.initial) {
