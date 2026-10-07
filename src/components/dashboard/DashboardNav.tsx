@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ClinicConfig } from "@/types/clinic";
-import type { StaffIdentity } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { useDismissablePanel } from "@/lib/useDismissablePanel";
 import { DASHBOARD_NAV_ITEMS } from "./navItems";
@@ -14,7 +13,6 @@ import styles from "./DashboardNav.module.css";
 
 interface DashboardNavProps {
   clinic: ClinicConfig;
-  staff: StaffIdentity;
 }
 
 /**
@@ -24,7 +22,7 @@ interface DashboardNavProps {
  * dismissable drawer — the same escape/focus behavior the public
  * site's mobile nav already uses, via the shared hook.
  */
-export function DashboardNav({ clinic, staff }: DashboardNavProps) {
+export function DashboardNav({ clinic }: DashboardNavProps) {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const drawerCloseRef = useRef<HTMLButtonElement | null>(null);
@@ -37,12 +35,7 @@ export function DashboardNav({ clinic, staff }: DashboardNavProps) {
 
   const brand = (
     <Link href="/dashboard" className={styles.mark}>
-      {clinic.brandMark?.type === "image" ? (
-        // eslint-disable-next-line @next/next/no-img-element -- clinic logos are arbitrary external URLs, not project-local assets next/image can optimize
-        <img src={clinic.brandMark.src} alt={clinic.brandMark.alt} className={styles.markImage} />
-      ) : (
-        <span className={styles.markDot} aria-hidden="true" />
-      )}
+      <span className={styles.markDot} aria-hidden="true" />
       {clinic.shortName}
     </Link>
   );
@@ -53,7 +46,7 @@ export function DashboardNav({ clinic, staff }: DashboardNavProps) {
       <nav className={styles.rail} aria-label="Dashboard navigation">
         {brand}
         <DashboardNavList items={DASHBOARD_NAV_ITEMS} currentPath={pathname} />
-        <DashboardStaffBadge clinicShortName={clinic.shortName} staff={staff} />
+        <DashboardStaffBadge clinicShortName={clinic.shortName} />
       </nav>
 
       {/* Mobile top bar */}
@@ -97,7 +90,7 @@ export function DashboardNav({ clinic, staff }: DashboardNavProps) {
           onNavigate={() => setIsDrawerOpen(false)}
           tabbable={isDrawerOpen}
         />
-        <DashboardStaffBadge clinicShortName={clinic.shortName} staff={staff} tabbable={isDrawerOpen} />
+        <DashboardStaffBadge clinicShortName={clinic.shortName} />
       </div>
     </>
   );

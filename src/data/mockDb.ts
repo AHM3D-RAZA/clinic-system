@@ -3,7 +3,6 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import type { BookingRequest } from "@/types/booking";
-import { bookingPatient, PATIENT_ID, seedDate } from "./seedGraph";
 
 /**
  * A stand-in for a real database table — file-backed JSON instead of a
@@ -63,9 +62,14 @@ const SEED_BOOKING_REQUESTS: BookingRequest[] = [
   {
     id: "bkg_seed0001",
     clinicId: "aster",
-    ...bookingPatient(PATIENT_ID.mayaChen),
+    patient: {
+      fullName: "Maya Chen",
+      email: "maya.chen@example.com",
+      phone: "+1 (555) 019-2231",
+      patientType: "existing",
+    },
     serviceId: "checkups-cleanings",
-    preferredDate: seedDate(3),
+    preferredDate: nextWeekdayIso(3),
     preferredTime: "morning",
     notes: "Would like the same hygienist as last time if possible.",
     status: "confirmed",
@@ -76,93 +80,18 @@ const SEED_BOOKING_REQUESTS: BookingRequest[] = [
   {
     id: "bkg_seed0002",
     clinicId: "aster",
-    ...bookingPatient(PATIENT_ID.owenBricks),
+    patient: {
+      fullName: "Owen Bricks",
+      email: "owen.b@example.com",
+      phone: "+1 (555) 048-7710",
+      patientType: "new",
+    },
     serviceId: "cosmetic-whitening",
-    preferredDate: seedDate(6),
+    preferredDate: nextWeekdayIso(6),
     preferredTime: "afternoon",
     status: "pending",
     createdAt: daysAgoIso(1),
     updatedAt: daysAgoIso(1),
-  },
-  // Bookings-workspace seed data — a realistic front-desk spread across
-  // every status so /dashboard/bookings has something genuine to show
-  // on first load, not just the two records above.
-  {
-    id: "bkg_seed0003",
-    clinicId: "aster",
-    ...bookingPatient(PATIENT_ID.danielOsei),
-    serviceId: "root-canal",
-    preferredDate: seedDate(-2),
-    preferredTime: "morning",
-    notes: "Sharp pain when biting down on the lower left side for about a week now.",
-    status: "pending",
-    createdAt: daysAgoIso(6),
-    updatedAt: daysAgoIso(6),
-  },
-  {
-    id: "bkg_seed0004",
-    clinicId: "aster",
-    ...bookingPatient(PATIENT_ID.hassanRaza),
-    serviceId: "orthodontics-aligners",
-    preferredDate: seedDate(9),
-    preferredTime: "evening",
-    status: "pending",
-    createdAt: daysAgoIso(0),
-    updatedAt: daysAgoIso(0),
-  },
-  {
-    id: "bkg_seed0005",
-    clinicId: "aster",
-    ...bookingPatient(PATIENT_ID.liamFitzgerald),
-    serviceId: "fillings-repairs",
-    preferredDate: seedDate(2),
-    preferredTime: "afternoon",
-    notes: "Chipped a tooth on popcorn — not painful, just sharp-edged.",
-    status: "contacted",
-    createdAt: daysAgoIso(3),
-    updatedAt: daysAgoIso(2),
-  },
-  {
-    id: "bkg_seed0006",
-    clinicId: "aster",
-    ...bookingPatient(PATIENT_ID.ethanWalsh),
-    serviceId: "kids-dentistry",
-    preferredDate: seedDate(5),
-    preferredTime: "morning",
-    status: "confirmed",
-    assignedDoctorId: "rehan-khalid",
-    createdAt: daysAgoIso(5),
-    updatedAt: daysAgoIso(3),
-  },
-  {
-    id: "bkg_seed0007",
-    clinicId: "aster",
-    ...bookingPatient(PATIENT_ID.isabelleMarchand),
-    serviceId: "checkups-cleanings",
-    preferredDate: seedDate(-10),
-    preferredTime: "afternoon",
-    status: "completed",
-    assignedDoctorId: "sana-malik",
-    createdAt: daysAgoIso(12),
-    updatedAt: daysAgoIso(10),
-  },
-  {
-    id: "bkg_seed0008",
-    clinicId: "aster",
-    // Deliberately no `patientId`: a cancelled inquiry from someone who
-    // never became a patient. The snapshot below is all there is.
-    patient: {
-      fullName: "Rosa Suleiman",
-      email: "rosa.suleiman@example.com",
-      phone: "+1 (555) 057-4402",
-      patientType: "new",
-    },
-    serviceId: "cosmetic-whitening",
-    preferredDate: seedDate(-4),
-    preferredTime: "evening",
-    status: "cancelled",
-    createdAt: daysAgoIso(8),
-    updatedAt: daysAgoIso(5),
   },
 ];
 
@@ -170,6 +99,12 @@ function daysAgoIso(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() - days);
   return d.toISOString();
+}
+
+function nextWeekdayIso(daysAhead: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAhead);
+  return d.toISOString().slice(0, 10);
 }
 
 /** Reads the store file. Returns `null` if it doesn't exist yet or is unreadable/corrupt — callers fall back to seed data in that case. */
@@ -256,29 +191,6 @@ export const bookingRequestsTable = {
     const existing = current.find((b) => b.id === id);
     if (!existing) return undefined;
     const updated: BookingRequest = { ...existing, status, updatedAt: new Date().toISOString() };
-    const next = current.map((b) => (b.id === id ? updated : b));
-    saveToDisk(next);
-    setStore(next);
-    return updated;
-  },
-  /**
-   * Sets status to "confirmed", assigns a doctor and (when resolved)
-   * records the patient id in a single write — these change together
-   * as one step of the booking→appointment workflow, so this does one
-   * `saveToDisk` rather than separate updates that could disagree if a
-   * write failed in between.
-   */
-  confirmWithDoctor(id: string, doctorId: string, patientId?: string): BookingRequest | undefined {
-    const current = getStore();
-    const existing = current.find((b) => b.id === id);
-    if (!existing) return undefined;
-    const updated: BookingRequest = {
-      ...existing,
-      status: "confirmed",
-      assignedDoctorId: doctorId,
-      patientId: patientId ?? existing.patientId,
-      updatedAt: new Date().toISOString(),
-    };
     const next = current.map((b) => (b.id === id ? updated : b));
     saveToDisk(next);
     setStore(next);

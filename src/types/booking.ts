@@ -1,10 +1,10 @@
 /**
  * Lifecycle of a booking request. A submitted form is ALWAYS "pending" —
  * it only becomes "confirmed" once a human (or, later, automation)
- * assigns a time and doctor. A booking request and an appointment
- * remain conceptually different things (see `types/appointment.ts`),
- * but confirming a booking (see `lib/deriveAppointment.ts`) is the
- * step that turns one into the other.
+ * assigns a time and doctor. See the project brief: a booking request
+ * and an appointment are conceptually different things, and we keep
+ * that distinction even though the MVP doesn't yet build the step that
+ * turns one into the other.
  */
 export type BookingStatus =
   | "pending"
@@ -41,15 +41,6 @@ export interface CreateBookingInput {
  */
 export interface BookingRequest extends CreateBookingInput {
   id: string;
-  /**
-   * The canonical `Patient.id` this request belongs to. Optional: a
-   * request submitted through the public form carries no patient
-   * identity until it's confirmed (see `services/confirmationService.ts`,
-   * which resolves or creates the patient and records the id here), and
-   * a request that never converts (e.g. cancelled) may never get one.
-   * `patient` below stays as the snapshot of what the form collected.
-   */
-  patientId?: string;
   status: BookingStatus;
   assignedDoctorId?: string;
   createdAt: string; // ISO datetime

@@ -7,7 +7,6 @@ interface BookingConfirmationProps {
   booking: BookingRequest;
   service: ServiceOffering | undefined;
   clinicPhone: string;
-  clinicShortName: string;
   onStartOver: () => void;
 }
 
@@ -15,7 +14,6 @@ export function BookingConfirmation({
   booking,
   service,
   clinicPhone,
-  clinicShortName,
   onStartOver,
 }: BookingConfirmationProps) {
   return (
@@ -53,9 +51,9 @@ export function BookingConfirmation({
       <div className={styles.next}>
         <h3>What happens next</h3>
         <ol>
-          <li>Someone from {clinicShortName} reviews your request (usually same-day).</li>
+          <li>Someone from Aster reviews your request (usually same-day).</li>
           <li>We call or email to confirm a specific time with a doctor.</li>
-          <li>You get a reminder the day before your visit.</li>
+          <li>Once a time is agreed, your visit is confirmed — nothing is booked until then.</li>
         </ol>
         <p className={styles.urgent}>
           Something urgent? Call us directly at{" "}

@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildActivityStreamNodes } from "./activityStream";
 import type { BookingRequest } from "@/types/booking";
-import type { Appointment } from "@/types/appointment";
 import type { DashboardOverviewSummary } from "@/types/dashboard";
 
 const TODAY_ISO = "2026-06-01";
@@ -19,27 +18,6 @@ function booking(overrides: Partial<BookingRequest>): BookingRequest {
     updatedAt: "2026-01-01T10:00:00.000Z",
     ...overrides,
   };
-}
-
-function appointment(overrides: Partial<Appointment>): Appointment {
-  return {
-    id: "apt_1",
-    clinicId: "aster",
-    patientId: "pat_1",
-    patientName: "Pat Patient",
-    patientType: "new",
-    doctorId: "nadia-farooqi",
-    serviceId: "checkups-cleanings",
-    date: TODAY_ISO,
-    time: "09:00",
-    durationMinutes: 30,
-    status: "confirmed",
-    ...overrides,
-  };
-}
-
-function manyAppointments(count: number, prefix: string): Appointment[] {
-  return Array.from({ length: count }, (_, i) => appointment({ id: `${prefix}${i}` }));
 }
 
 function summaryOf(overrides: Partial<DashboardOverviewSummary>): DashboardOverviewSummary {
@@ -61,7 +39,7 @@ function chapterEntryIds(nodes: ReturnType<typeof buildActivityStreamNodes>, cha
   let current = "";
   for (const node of nodes) {
     if (node.type === "chapterLabel") current = node.key;
-    if ((node.type === "entry" || node.type === "appointmentEntry") && current === chapterKey) ids.push(node.key);
+    if (node.type === "entry" && current === chapterKey) ids.push(node.key);
   }
   return ids;
 }
@@ -74,30 +52,18 @@ describe("buildActivityStreamNodes — grouping and dedup (unchanged behavior)",
     expect(nodes.filter((n) => n.type === "emptyNote")).toHaveLength(3);
   });
 
-  it("a pending request waits under 'Waiting on you' only — 'Today' holds real appointments", () => {
-    const b = booking({ id: "a", status: "pending", preferredDate: TODAY_ISO });
-    const nodes = buildActivityStreamNodes(
-      summaryOf({ pending: [b], recent: [b], totalCount: 1 }),
-      TODAY_ISO,
-    );
+  it("does not duplicate a pending booking that is also preferred for today", () => {
+    const b = booking({ id: "a", status: "pending" });
+    const nodes = buildActivityStreamNodes(summaryOf({ pending: [b], today: [b], recent: [b], totalCount: 1 }), TODAY_ISO);
     expect(chapterEntryIds(nodes, "waiting")).toEqual(["a"]);
     expect(chapterEntryIds(nodes, "today")).toEqual([]);
     expect(chapterEntryIds(nodes, "recent")).toEqual([]);
   });
 
-  it("renders today's appointments as appointment entries", () => {
-    const today = [appointment({ id: "apt_a" })];
-    const nodes = buildActivityStreamNodes(summaryOf({ today }), TODAY_ISO);
-    expect(nodes.filter((n) => n.type === "appointmentEntry").map((n) => n.key)).toEqual(["apt_a"]);
-    expect(nodes.filter((n) => n.type === "entry")).toHaveLength(0);
-  });
-
-  it("does not repeat a request under 'Recently in' once it is one of today's appointments", () => {
-    const b = booking({ id: "bkg_a", status: "confirmed" });
-    const today = [appointment({ id: "apt_a", sourceBookingId: "bkg_a" })];
-    const nodes = buildActivityStreamNodes(summaryOf({ today, recent: [b], totalCount: 1 }), TODAY_ISO);
-    expect(chapterEntryIds(nodes, "today")).toEqual(["apt_a"]);
-    expect(chapterEntryIds(nodes, "recent")).toEqual([]);
+  it("does not duplicate a today booking that also appears in recent", () => {
+    const b = booking({ id: "a", status: "confirmed" });
+    const nodes = buildActivityStreamNodes(summaryOf({ today: [b], recent: [b], totalCount: 1 }), TODAY_ISO);
+    expect(nodes.filter((n) => n.type === "entry")).toHaveLength(1);
   });
 });
 
@@ -111,7 +77,7 @@ describe("buildActivityStreamNodes — curation", () => {
   });
 
   it("caps 'today' at 4 and 'recent' at 3 by default", () => {
-    const today = manyAppointments(6, "t");
+    const today = manyBookings(6, "t");
     const recent = manyBookings(5, "r");
     const nodes = buildActivityStreamNodes(summaryOf({ today, recent, totalCount: 11 }), TODAY_ISO);
     expect(chapterEntryIds(nodes, "today")).toHaveLength(4);
@@ -156,7 +122,7 @@ describe("buildActivityStreamNodes — curation", () => {
 
   it("does not blow up with a large realistic dataset (5 pending / 12 today / 20 recent pool)", () => {
     const pending = manyBookings(5, "w");
-    const today = manyAppointments(12, "t");
+    const today = manyBookings(12, "t");
     const recent = manyBookings(20, "r");
     const nodes = buildActivityStreamNodes(summaryOf({ pending, today, recent, totalCount: 37 }), TODAY_ISO);
 

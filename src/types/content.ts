@@ -72,7 +72,6 @@ export interface ClinicContentBundle {
   nav: NavLink[];
   heroCopy: HeroCopy;
   marqueeItems: string[];
-  introHeadline: string;
   introCopy: string;
   services: ServiceOffering[];
   doctors: Doctor[];

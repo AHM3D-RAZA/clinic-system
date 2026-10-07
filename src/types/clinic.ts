@@ -42,33 +42,8 @@ export interface ClinicContact {
   phone: string;
   email: string;
   address: string;
-  /** Human-readable display string. The structured form lives in `ClinicConfig.operatingHours`. */
   hours: string;
 }
-
-/**
- * Structured opening hours, in preparation for scheduling. Nothing
- * enforces these yet — `ClinicContact.hours` remains what's displayed.
- */
-export interface ClinicOperatingHours {
-  /** Days the clinic is open, 0 = Sunday … 6 = Saturday. */
-  openDays: number[];
-  /** 24-hour clock, HH:mm. */
-  opensAt: string;
-  closesAt: string;
-}
-
-/**
- * How a clinic's brand appears next to its name in navigation. Optional
- * on purpose: when a clinic has no `brandMark` (or sets `{ type: "text" }`),
- * the nav falls back to its existing text + colored-dot/icon treatment
- * (see DashboardNav, ClinicNavigation) — so every clinic works with zero
- * new assets, and a future clinic with a real logo just sets
- * `{ type: "image", src, alt }` instead. Deliberately not "logo?: string"
- * — the discriminant keeps "no logo yet" and "logo is this URL" distinct
- * rather than relying on an empty-string convention.
- */
-export type ClinicBrandMark = { type: "text" } | { type: "image"; src: string; alt: string };
 
 /**
  * Booking behavior a clinic can configure. The MVP only ever runs
@@ -90,9 +65,6 @@ export interface ClinicConfig {
   eyebrow: string;
   description: string;
   contact: ClinicContact;
-  operatingHours: ClinicOperatingHours;
   theme: ClinicThemeTokens;
   bookingSettings: ClinicBookingSettings;
-  /** Omit for the existing text/dot mark — see ClinicBrandMark. */
-  brandMark?: ClinicBrandMark;
 }

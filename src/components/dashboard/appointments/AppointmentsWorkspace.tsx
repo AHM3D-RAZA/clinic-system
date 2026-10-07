@@ -5,7 +5,6 @@ import type { Appointment } from "@/types/appointment";
 import type { Doctor, ServiceOffering } from "@/types/content";
 import { addDaysIso, appointmentsOnDate, buildDayChapters, buildDayStrip, buildDaySummaryLine } from "@/lib/appointments";
 import { formatDateForDisplay } from "@/lib/utils";
-import { useLocalAppointments } from "./useLocalAppointments";
 import { AppointmentsHeader } from "./AppointmentsHeader";
 import { AppointmentDayNav } from "./AppointmentDayNav";
 import { AppointmentTimeline } from "./AppointmentTimeline";
@@ -20,16 +19,13 @@ interface AppointmentsWorkspaceProps {
 }
 
 /**
- * Owns which day is selected and which row is expanded; every
- * grouping/formatting decision (which chapters exist, the strip's day
- * range, the summary line, the detail sentence) lives in
- * lib/appointments.ts, so this component only wires state to the
- * small presentational pieces below it.
+ * Owns which day is currently selected; every grouping/formatting
+ * decision (which chapters exist, the strip's day range, the summary
+ * line) lives in lib/appointments.ts, so this component only wires
+ * state to the small presentational pieces below it.
  */
-export function AppointmentsWorkspace({ appointments: initialAppointments, services, doctors, todayIso }: AppointmentsWorkspaceProps) {
+export function AppointmentsWorkspace({ appointments, services, doctors, todayIso }: AppointmentsWorkspaceProps) {
   const [selectedIso, setSelectedIso] = useState(todayIso);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const { appointments, updateStatus } = useLocalAppointments(initialAppointments);
 
   const serviceById = useMemo(() => Object.fromEntries(services.map((s) => [s.id, s])), [services]);
   const doctorById = useMemo(() => Object.fromEntries(doctors.map((d) => [d.id, d])), [doctors]);
@@ -40,12 +36,6 @@ export function AppointmentsWorkspace({ appointments: initialAppointments, servi
     () => buildDayStrip(appointments, todayIso, selectedIso),
     [appointments, todayIso, selectedIso],
   );
-
-  // A row expanded on one day has no meaning on another day. Rather
-  // than reset state in an effect when `selectedIso` changes, treat
-  // the id as "live" only if it's actually in today's list — switching
-  // days naturally collapses it, no synchronization step needed.
-  const effectiveExpandedId = dayAppointments.some((a) => a.id === expandedId) ? expandedId : null;
 
   const dateHeading =
     selectedIso === todayIso ? `Today — ${formatDateForDisplay(selectedIso)}` : formatDateForDisplay(selectedIso);
@@ -67,15 +57,7 @@ export function AppointmentsWorkspace({ appointments: initialAppointments, servi
       {dayAppointments.length === 0 ? (
         <AppointmentEmptyState dateLabel={formatDateForDisplay(selectedIso)} />
       ) : (
-        <AppointmentTimeline
-          chapters={chapters}
-          serviceById={serviceById}
-          doctorById={doctorById}
-          dateLabel={formatDateForDisplay(selectedIso)}
-          expandedId={effectiveExpandedId}
-          onToggleExpand={(id) => setExpandedId((current) => (current === id ? null : id))}
-          onStatusChange={updateStatus}
-        />
+        <AppointmentTimeline chapters={chapters} serviceById={serviceById} doctorById={doctorById} />
       )}
     </div>
   );

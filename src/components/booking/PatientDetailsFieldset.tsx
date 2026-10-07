@@ -14,17 +14,9 @@ interface PatientDetailsFieldsetProps {
   errors: BookingFormErrors;
   fieldId: (name: string) => string;
   setField: <K extends keyof RawBookingFormValues>(key: K, value: string) => void;
-  /** Falls back to generic phrasing ("us") when the clinic isn't known, e.g. in tests. */
-  clinicShortName?: string;
 }
 
-export function PatientDetailsFieldset({
-  values,
-  errors,
-  fieldId,
-  setField,
-  clinicShortName,
-}: PatientDetailsFieldsetProps) {
+export function PatientDetailsFieldset({ values, errors, fieldId, setField }: PatientDetailsFieldsetProps) {
   return (
     <fieldset className={styles.fieldset}>
       <legend>Who are we booking for?</legend>
@@ -91,7 +83,7 @@ export function PatientDetailsFieldset({
       <RadioPillGroup
         name="patientType"
         ariaLabel="Patient type"
-        groupLabel={`Have you visited ${clinicShortName ?? "us"} before?`}
+        groupLabel="Have you visited Aster before?"
         options={PATIENT_TYPE_OPTIONS}
         selected={values.patientType}
         onChange={(value) => setField("patientType", value)}

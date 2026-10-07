@@ -6,6 +6,7 @@ import type { AssistantFlow, ClinicKnowledgeEntry } from "@/types/assistant";
 import { getStep, resolveOptionOutcome, resolveStepText } from "@/assistant/orchestrator";
 import { cn } from "@/lib/utils";
 import { useDismissablePanel } from "@/lib/useDismissablePanel";
+import { useScrollTuck } from "./useScrollTuck";
 import styles from "./AsterReceptionist.module.css";
 
 interface AsterReceptionistProps {
@@ -27,6 +28,7 @@ interface AsterReceptionistProps {
 export function AsterReceptionist({ flow, knowledge, clinicShortName }: AsterReceptionistProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [stepKey, setStepKey] = useState("start");
+  const isScrollingDown = useScrollTuck();
   const router = useRouter();
   const toggleRef = useRef<HTMLButtonElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -101,7 +103,7 @@ export function AsterReceptionist({ flow, knowledge, clinicShortName }: AsterRec
 
       <button
         type="button"
-        className={cn(styles.toggle, isOpen && styles.toggleOpen)}
+        className={cn(styles.toggle, isOpen && styles.toggleOpen, isScrollingDown && !isOpen && styles.toggleTucked)}
         aria-label={isOpen ? `Close the ${clinicShortName} front desk` : `Open the ${clinicShortName} front desk`}
         onClick={() => setIsOpen((v) => !v)}
         ref={toggleRef}

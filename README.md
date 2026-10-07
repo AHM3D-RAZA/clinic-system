@@ -249,40 +249,9 @@ the same; the four function bodies become real queries against
 whatever database is chosen. `bookingService.ts`, the API routes, and
 every component above them stay untouched.
 
-## Staff sign-in (pilot-grade authentication)
-
-The public site (`/`, `/book`, `POST /api/bookings`) is open. Everything
-that exposes patient or operational data needs a staff session:
-`/dashboard/*` redirects to `/login`, and `GET /api/bookings/:id` and
-`POST /api/bookings/:id/confirm` return `401` without one.
-
-**Demo login (local):**
-
-```bash
-npm run auth:demo      # writes .env.local with a random password and prints it once
-npm run dev            # restart so the new env is picked up
-```
-
-Then sign in at http://localhost:3000/login. `.env.local` is gitignored.
-
-**Real accounts:** copy `.env.example` to `.env.local`, set `AUTH_SECRET`
-(32+ chars) and `STAFF_ACCOUNTS` (JSON; hash passwords with
-`npm run auth:hash -- "<password>"`). If either is missing or malformed,
-nobody can sign in — the dashboard stays locked.
-
-How it works: a signed (HMAC-SHA256), HttpOnly, SameSite=Lax session
-cookie valid for 12 hours; `src/proxy.ts` blocks signed-out requests,
-the dashboard layout and API handlers check again (`src/lib/auth/`).
-Passwords are scrypt-hashed. Failed logins are throttled in memory.
-
-Known limits (by design for a pilot): no roles/permissions, no password
-reset, no MFA, no audit log; sessions are stateless so they can't be
-revoked individually (remove the account or rotate `AUTH_SECRET`); the
-login throttle is per-process; accounts live in environment config.
-
 ## What's deliberately NOT in this codebase
 
-Per scope lock: no role-based auth (see Staff sign-in for the pilot-grade boundary), no patient
+Per scope lock: no dashboard routes or components, no auth, no patient
 management, no real WhatsApp/email/payment integration, no LLM/AI
 backend. `ClinicBookingSettings` (`feeMode`, `automationMode`) and
 `BookingStatus` exist as forward-compatible shape only — the MVP always

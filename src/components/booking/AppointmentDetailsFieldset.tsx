@@ -1,6 +1,7 @@
 import type { BookingFormErrors, PreferredTimeSlot } from "@/types/booking";
 import type { ServiceOffering } from "@/types/content";
 import type { RawBookingFormValues } from "@/lib/validators";
+import { closedDayError, OPEN_DAYS_HINT } from "@/lib/bookingDays";
 import { BookingFormField } from "./BookingFormField";
 import { RadioPillGroup } from "./RadioPillGroup";
 import styles from "./BookingForm.module.css";
@@ -22,6 +23,10 @@ interface AppointmentDetailsFieldsetProps {
 }
 
 export function AppointmentDetailsFieldset({ values, errors, services, fieldId, setField }: AppointmentDetailsFieldsetProps) {
+  // Closed days are flagged as soon as they are picked, not only on submit.
+  const dateError = errors.preferredDate ?? closedDayError(values.preferredDate);
+  const dateDescribedBy = [fieldId("date-hint"), dateError && fieldId("date-error")].filter(Boolean).join(" ");
+
   return (
     <fieldset className={styles.fieldset}>
       <legend>What do you need?</legend>
@@ -56,8 +61,10 @@ export function AppointmentDetailsFieldset({ values, errors, services, fieldId, 
         <BookingFormField
           label="Preferred date"
           htmlFor={fieldId("date")}
-          error={errors.preferredDate}
+          error={dateError}
           errorId={fieldId("date-error")}
+          hint={OPEN_DAYS_HINT}
+          hintId={fieldId("date-hint")}
         >
           <input
             id={fieldId("date")}
@@ -67,8 +74,8 @@ export function AppointmentDetailsFieldset({ values, errors, services, fieldId, 
             aria-required="true"
             value={values.preferredDate}
             onChange={(e) => setField("preferredDate", e.target.value)}
-            aria-invalid={Boolean(errors.preferredDate)}
-            aria-describedby={errors.preferredDate ? fieldId("date-error") : undefined}
+            aria-invalid={Boolean(dateError)}
+            aria-describedby={dateDescribedBy}
           />
         </BookingFormField>
 

@@ -1,5 +1,4 @@
 import type { BookingRequest } from "./booking";
-import type { Appointment } from "./appointment";
 
 /**
  * A dashboard nav destination. `implemented: false` renders as an
@@ -25,15 +24,10 @@ export type DashboardNavIconKey =
   | "team"
   | "settings";
 
-/**
- * What the overview page presents. `pending` and `recent` come from
- * booking requests; `today` comes from the appointment schedule — the
- * same source the Appointments timeline uses — so "today" can't differ
- * between the two screens.
- */
+/** Booking requests grouped the way the overview page needs to present them. */
 export interface DashboardOverviewSummary {
   pending: BookingRequest[];
-  today: Appointment[];
+  today: BookingRequest[];
   recent: BookingRequest[];
   totalCount: number;
 }

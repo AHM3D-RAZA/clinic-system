@@ -6,7 +6,6 @@ import type { ActivityChapterKey } from "@/lib/activityStream";
 import { buildActivityStreamNodes } from "@/lib/activityStream";
 import { ActivityStreamChapterLabel } from "./ActivityStreamChapterLabel";
 import { ActivityStreamEntry } from "./ActivityStreamEntry";
-import { ActivityStreamAppointmentEntry } from "./ActivityStreamAppointmentEntry";
 import { ActivityStreamEmptyNote } from "./ActivityStreamEmptyNote";
 import { ActivityStreamToggle } from "./ActivityStreamToggle";
 import { ActivityStreamOverflowNote } from "./ActivityStreamOverflowNote";
@@ -31,7 +30,7 @@ interface ClinicActivityStreamProps {
 export function ClinicActivityStream({ summary, serviceNameById, doctorNameById, todayIso }: ClinicActivityStreamProps) {
   const [expandedChapters, setExpandedChapters] = useState<ReadonlySet<ActivityChapterKey>>(() => new Set());
 
-  if (summary.totalCount === 0 && summary.today.length === 0) {
+  if (summary.totalCount === 0) {
     return (
       <div className={styles.quiet}>
         <p className={styles.quietTitle}>It&apos;s quiet in here.</p>
@@ -73,16 +72,6 @@ export function ClinicActivityStream({ summary, serviceNameById, doctorNameById,
                 label={node.label}
                 expanded={node.expanded}
                 onToggle={() => toggleChapter(node.chapterKey)}
-              />
-            );
-          case "appointmentEntry":
-            return (
-              <ActivityStreamAppointmentEntry
-                key={node.key}
-                index={index}
-                appointment={node.appointment}
-                serviceName={serviceNameById[node.appointment.serviceId] ?? "Unspecified treatment"}
-                doctorName={doctorNameById[node.appointment.doctorId]}
               />
             );
           case "entry":

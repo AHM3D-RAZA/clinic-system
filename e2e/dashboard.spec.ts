@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { signIn } from "./helpers/auth";
 
 /**
  * The dashboard masthead states its own waiting count in prose (see
@@ -18,10 +17,6 @@ function parseWaitingCount(text: string | null): number {
 }
 
 test.describe("smoke: dashboard", () => {
-  test.beforeEach(async ({ page }) => {
-    await signIn(page);
-  });
-
   test("dashboard loads with no fatal JS errors and shows the real overview", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", (err) => pageErrors.push(err));
@@ -54,6 +49,7 @@ test.describe("smoke: dashboard", () => {
 
   test("submitting a booking increases the dashboard's waiting-on-you count by one, and the record actually persists", async ({
     page,
+    request,
   }) => {
     // Phase 2 note: "Waiting on you" is curated (initial cap 3, expanded
     // cap 8) and orders oldest-request-first, so a *freshly* submitted
@@ -92,7 +88,7 @@ test.describe("smoke: dashboard", () => {
     const createBody = await createResponse.json();
     expect(createBody.ok).toBe(true);
     const bookingId = createBody.booking.id;
-    const getResponse = await page.request.get(`/api/bookings/${bookingId}`);
+    const getResponse = await request.get(`/api/bookings/${bookingId}`);
     expect(getResponse.ok()).toBe(true);
     const getBody = await getResponse.json();
     expect(getBody.booking).toMatchObject({ id: bookingId, status: "pending", patient: { fullName: patientName } });
@@ -111,13 +107,9 @@ test.describe("smoke: dashboard", () => {
 
     const rail = page.getByRole("navigation", { name: "Dashboard navigation" });
     await expect(rail.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "page");
-    // Patients, Bookings, Appointments, and Team are all real now — only
-    // Settings remains an honest "soon" placeholder, not a dead link.
-    await expect(rail.getByRole("link", { name: "Patients" })).toBeVisible();
-    await expect(rail.getByRole("link", { name: "Bookings" })).toBeVisible();
-    await expect(rail.getByText("Settings")).toBeVisible();
-    await expect(rail.getByRole("link", { name: "Settings" })).toHaveCount(0);
-    await expect(rail.getByText("Soon")).toBeVisible();
+    await expect(rail.getByText("Patients")).toBeVisible();
+    await expect(rail.getByRole("link", { name: "Patients" })).toHaveCount(0);
+    await expect(rail.getByText("Soon").first()).toBeVisible();
   });
 
   test("mobile menu opens the dashboard nav drawer and closes on Escape", async ({ page, isMobile }) => {

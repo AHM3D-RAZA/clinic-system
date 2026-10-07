@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import type { BookingFormErrors, BookingRequest } from "@/types/booking";
-import { validateBookingForm, type RawBookingFormValues } from "@/lib/validators";
+import type { RawBookingFormValues } from "@/lib/validators";
+import { validateBookingRequest } from "./validateBookingRequest";
 
 export type SubmitStatus = "idle" | "submitting" | "error";
 
@@ -57,7 +58,7 @@ export function useBookingFormState({
     if (status === "submitting") return;
     setServerMessage(null);
 
-    const { valid, errors: validationErrors } = validateBookingForm(values, knownServiceIds);
+    const { valid, errors: validationErrors } = validateBookingRequest(values, knownServiceIds);
     setErrors(validationErrors);
 
     if (!valid) {

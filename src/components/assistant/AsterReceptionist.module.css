@@ -24,6 +24,7 @@
   transition:
     transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s,
     background 0.3s;
 }
 .toggle svg {
@@ -154,10 +155,26 @@
   color: var(--color-primary-deep);
 }
 
+/* Tablet and phone: the page content runs edge to edge, so the launcher
+   steps aside while the reader scrolls down and returns on scroll-up
+   (or at the top/bottom). Still focusable, and reappears on keyboard focus. */
+@media (max-width: 900px) {
+  .toggleTucked {
+    opacity: 0;
+    transform: translateY(24px) rotate(-2deg);
+    pointer-events: none;
+  }
+  .toggleTucked:focus-visible {
+    opacity: 1;
+    transform: rotate(-2deg);
+    pointer-events: auto;
+  }
+}
+
 @media (max-width: 520px) {
   .receptionist {
-    right: 16px;
-    bottom: 16px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
   }
   .card {
     width: 88vw;
@@ -166,6 +183,13 @@
     display: none;
   }
   .toggle {
-    padding: 13px;
+    padding: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle,
+  .card {
+    transition: none;
   }
 }

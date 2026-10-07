@@ -1,6 +1,4 @@
 import type { BookingRequest } from "@/types/booking";
-import type { Appointment } from "@/types/appointment";
-import { appointmentsOnDate } from "./appointments";
 import type { Doctor, ServiceOffering } from "@/types/content";
 import type { DashboardOverviewSummary } from "@/types/dashboard";
 
@@ -12,36 +10,30 @@ import type { DashboardOverviewSummary } from "@/types/dashboard";
 const RECENT_POOL_LIMIT = 20;
 
 /**
- * Shapes a clinic's booking requests and appointments into what the
- * overview page needs to render. Booking requests drive the "waiting"
- * and "recent" chapters; today's schedule comes from real appointments
- * (cancelled ones aren't "on the books"). Pure and framework-free on purpose — the page
+ * Shapes a clinic's raw booking requests into what the overview page
+ * needs to render. Pure and framework-free on purpose — the page
  * (server component) calls this after fetching through
  * `bookingService`, and it's fully unit-testable without rendering
  * anything.
  */
 export function buildOverviewSummary(
   bookings: BookingRequest[],
-  appointments: Appointment[],
   todayIso: string,
 ): DashboardOverviewSummary {
   const byNewestFirst = [...bookings].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   return {
     pending: byNewestFirst.filter((b) => b.status === "pending"),
-    today: appointmentsOnDate(appointments, todayIso).filter((a) => a.status !== "cancelled"),
+    today: byNewestFirst.filter((b) => b.preferredDate === todayIso),
     recent: byNewestFirst.slice(0, RECENT_POOL_LIMIT),
     totalCount: bookings.length,
   };
 }
 
-/**
- * Today's date as `yyyy-mm-dd`. One definition for the whole dashboard:
- * the clinic's local calendar date, the same one the Appointments
- * timeline uses (see `lib/appointments.ts`) — Overview and Appointments
- * must never disagree about what "today" is.
- */
-export { todayIsoDate } from "./appointments";
+/** Today's date as `yyyy-mm-dd`, matching how `preferredDate` is stored. */
+export function todayIsoDate(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
 
 export type GreetingPeriod = "morning" | "afternoon" | "evening";
 
