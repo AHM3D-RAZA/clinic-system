@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { signIn } from "./helpers/auth";
 
 /**
  * The dashboard masthead states its own waiting count in prose (see
@@ -17,6 +18,10 @@ function parseWaitingCount(text: string | null): number {
 }
 
 test.describe("smoke: dashboard", () => {
+  test.beforeEach(async ({ page }) => {
+    await signIn(page);
+  });
+
   test("dashboard loads with no fatal JS errors and shows the real overview", async ({ page }) => {
     const pageErrors: Error[] = [];
     page.on("pageerror", (err) => pageErrors.push(err));
@@ -49,7 +54,6 @@ test.describe("smoke: dashboard", () => {
 
   test("submitting a booking increases the dashboard's waiting-on-you count by one, and the record actually persists", async ({
     page,
-    request,
   }) => {
     // Phase 2 note: "Waiting on you" is curated (initial cap 3, expanded
     // cap 8) and orders oldest-request-first, so a *freshly* submitted
@@ -88,7 +92,7 @@ test.describe("smoke: dashboard", () => {
     const createBody = await createResponse.json();
     expect(createBody.ok).toBe(true);
     const bookingId = createBody.booking.id;
-    const getResponse = await request.get(`/api/bookings/${bookingId}`);
+    const getResponse = await page.request.get(`/api/bookings/${bookingId}`);
     expect(getResponse.ok()).toBe(true);
     const getBody = await getResponse.json();
     expect(getBody.booking).toMatchObject({ id: bookingId, status: "pending", patient: { fullName: patientName } });

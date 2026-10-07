@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { BookingRequest } from "../src/types/booking";
+import { signIn } from "./helpers/auth";
 
 function futureDateIso(daysAhead: number): string {
   const d = new Date();
@@ -27,7 +28,6 @@ function readStoreFileDirectly(): BookingRequest[] {
 test.describe("end-to-end: patient books an appointment", () => {
   test("a real patient can open the site, book a visit, and the booking is actually persisted", async ({
     page,
-    request,
   }) => {
     // 1. Open website.
     await page.goto("/");
@@ -79,7 +79,9 @@ test.describe("end-to-end: patient books an appointment", () => {
     expect(createBody.ok).toBe(true);
     const bookingId = createBody.booking.id;
 
-    const getResponse = await request.get(`/api/bookings/${bookingId}`);
+    // Reading a booking back needs a staff session (the API is protected).
+    await signIn(page);
+    const getResponse = await page.request.get(`/api/bookings/${bookingId}`);
     expect(getResponse.ok()).toBe(true);
     const getBody = await getResponse.json();
     expect(getBody.booking).toMatchObject({
@@ -142,7 +144,7 @@ test.describe("end-to-end: patient books an appointment", () => {
     expect(new Set(createdIds).size).toBe(3);
   });
 
-  test("refreshing after a successful booking does not resubmit or duplicate it", async ({ page, request }) => {
+  test("refreshing after a successful booking does not resubmit or duplicate it", async ({ page }) => {
     await page.goto("/book");
     await page.getByLabel("Full name").fill("Wasi Rahman");
     await page.getByLabel("Email").fill("wasi.rahman@example.com");
@@ -173,7 +175,8 @@ test.describe("end-to-end: patient books an appointment", () => {
     await expect(page.getByLabel("Full name")).toHaveValue("");
     expect(postCount).toBe(0);
 
-    const getResponse = await request.get(`/api/bookings/${booking.id}`);
+    await signIn(page);
+    const getResponse = await page.request.get(`/api/bookings/${booking.id}`);
     const getBody = await getResponse.json();
     expect(getBody.booking.id).toBe(booking.id);
   });
