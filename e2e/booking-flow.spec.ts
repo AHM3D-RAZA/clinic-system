@@ -6,7 +6,9 @@ import { signIn } from "./helpers/auth";
 
 function futureDateIso(daysAhead: number): string {
   const d = new Date();
-  d.setDate(d.getDate() + daysAhead);
+  d.setUTCDate(d.getUTCDate() + daysAhead);
+  // The booking form refuses Sundays, so roll forward to the next open day.
+  while (d.getUTCDay() === 0) d.setUTCDate(d.getUTCDate() + 1);
   return d.toISOString().slice(0, 10);
 }
 

@@ -55,7 +55,7 @@ export function BookingConfirmation({
         <ol>
           <li>Someone from {clinicShortName} reviews your request (usually same-day).</li>
           <li>We call or email to confirm a specific time with a doctor.</li>
-          <li>You get a reminder the day before your visit.</li>
+          <li>Once a time is agreed, your visit is confirmed — nothing is booked until then.</li>
         </ol>
         <p className={styles.urgent}>
           Something urgent? Call us directly at{" "}

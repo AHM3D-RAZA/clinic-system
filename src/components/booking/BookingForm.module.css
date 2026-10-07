@@ -107,6 +107,11 @@
   font-weight: 600;
 }
 
+.fieldHint {
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+}
+
 .errorSummary {
   background: color-mix(in srgb, var(--color-primary) 10%, transparent);
   border: 1.5px solid var(--color-primary);
